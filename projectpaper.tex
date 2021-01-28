@@ -1,0 +1,105 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{times}
+\usepackage{durhampaper}
+\usepackage{harvard}
+
+\citationmode{abbr}
+\bibliographystyle{agsm}
+
+\title{Formatting Template for the 3rd Year Project Paper}
+\author{} % leave; your name goes into \student{}
+\student{Sam Robbins}
+\supervisor{Y.A.A.N. Other}
+\degree{BSc Computer Science}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    These instructions give you guidelines for preparing the final paper.  DO NOT change any settings, such as margins and font sizes.  Just use this as a template and modify the contents into your final paper.  Do not cite references in the abstract.
+
+    The abstract must be a Structured Abstract with the headings {\bf Context/Background}, {\bf Aims}, {\bf Method}, {\bf Results}, and {\bf Conclusions}.  This section should not be longer than half of a page, and having no more than one or two sentences under each heading is advised.
+\end{abstract}
+
+\begin{keywords}
+    Put a few keywords here.
+\end{keywords}
+
+\section{Introduction}
+This section briefly introduces the general project background, the research question you are addressing, and the project objectives.  It should be between 2 to 3 pages in length.  Do not change the font sizes or line spacing in order to put in more text.
+
+Note that the whole report, including the references, should not be longer than 20 pages in length.  The system will not accept any report longer than 20 pages.  It should be noted that not all the details of the work carried out in the project can be represented in 20 pages.  It is therefore vital that the Project Log book be kept up to date as this will be used as supplementary material when the project paper is marked.  There should be between 10 and 20 referenced papers---references to Web based pages should be less than 10\%.
+
+\section{Related Work}
+This section presents a survey of existing work on the problems that this project addresses.  it should be between 2 to 4 pages in length.  The rest of this section shows the formats of subsections as well as some general formatting information for tables, figures, references and equations.
+
+\subsection{Main Text}
+
+The font used for the main text should be Times New Roman (Times) and the font size should be 12.  The first line of all paragraphs should be indented by 0.25in, except for the first paragraph of each section, subsection, subsubsection etc. (the paragraph immediately after the header) where no indentation is needed.
+
+\subsection{Figures and Tables}
+In general, figures and tables should not appear before they are cited.  Place figure captions below the figures; place table titles above the tables.  If your figure has two parts, for example, include the labels ``(a)'' and ``(b)'' as part of the artwork.  Please verify that figures and tables you mention in the text actually exist.  make sure that all tables and figures are numbered as shown in Table \ref{units} and Figure 1.
+%sort out your own preferred means of inserting figures
+
+\begin{table}[htb]
+    \centering
+    \caption{UNITS FOR MAGNETIC PROPERTIES}
+    \vspace*{6pt}
+    \label{units}
+    \begin{tabular}{ccc}\hline\hline
+        Symbol & Quantity & Conversion from Gaussian \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsection{References}
+
+The list of cited references should appear at the end of the report, ordered alphabetically by the surnames of the first authors.  References cited in the main text should use Harvard (author, date) format.  When citing a section in a book, please give the relevant page numbers, as in \cite[p293]{budgen}.  When citing, where there are either one or two authors, use the names, but if there are more than two, give the first one and use ``et al.'' as in  , except where this would be ambiguous, in which case use all author names.
+
+You need to give all authors' names in each reference.  Do not use ``et al.'' unless there are more than five authors.  Papers that have not been published should be cited as ``unpublished'' \cite{euther}.  Papers that have been submitted or accepted for publication should be cited as ``submitted for publication'' as in \cite{futher} .  You can also cite using just the year when the author's name appears in the text, as in ``but according to Futher \citeyear{futher}, we \dots''.  Where an authors has more than one publication in a year, add `a', `b' etc. after the year.
+
+\section{Solution}
+
+This section presents the solutions to the problems in detail.  The design and implementation details should all be placed in this section.  You may create a number of subsections, each focussing on one issue.
+
+This section should be between 4 to 7 pages in length.
+
+\section{Results}
+
+this section presents the results of the solutions.  It should include information on experimental settings.  The results should demonstrate the claimed benefits/disadvantages of the proposed solutions.
+
+This section should be between 2 to 3 pages in length.
+
+\section{Evaluation}
+
+This section should between 1 to 2 pages in length.
+
+\section{Conclusions}
+
+This section summarises the main points of this paper.  Do not replicate the abstract as the conclusion.  A conclusion might elaborate on the importance of the work or suggest applications and extensions.  This section should be no more than 1 page in length.
+
+The page lengths given for each section are indicative and will vary from project to project but should not exceed the upper limit.  A summary is shown in Table \ref{summary}.
+
+\begin{table}[htb]
+    \centering
+    \caption{SUMMARY OF PAGE LENGTHS FOR SECTIONS}
+    \vspace*{6pt}
+    \label{summary}
+    \begin{tabular}{|ll|c|} \hline
+             & \multicolumn{1}{c|}{\bf Section} & {\bf Number of Pages} \\ \hline
+        I.   & Introduction                     & 2--3                  \\ \hline
+        II.  & Related Work                     & 2--3                  \\ \hline
+        III. & Solution                         & 4--7                  \\ \hline
+        IV.  & Results                          & 2--3                  \\ \hline
+        V.   & Evaluation                       & 1-2                   \\ \hline
+        VI.  & Conclusions                      & 1                     \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\bibliography{projectpaper}
+
+
+\end{document}
