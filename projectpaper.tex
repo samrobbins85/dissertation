@@ -9,7 +9,7 @@
 \title{Formatting Template for the 3rd Year Project Paper}
 \author{} % leave; your name goes into \student{}
 \student{Sam Robbins}
-\supervisor{Y.A.A.N. Other}
+\supervisor{Tom Friedetzky}
 \degree{BSc Computer Science}
 
 \date{}
@@ -19,46 +19,73 @@
 \maketitle
 
 \begin{abstract}
-    These instructions give you guidelines for preparing the final paper.  DO NOT change any settings, such as margins and font sizes.  Just use this as a template and modify the contents into your final paper.  Do not cite references in the abstract.
+    \subsection{Context/Background}
+    Web Assembly is a relatively new method for computation on the web, allowing for the use of a much wider range of languages. This is being used in high intensity contexts to improve computation time.
 
-    The abstract must be a Structured Abstract with the headings {\bf Context/Background}, {\bf Aims}, {\bf Method}, {\bf Results}, and {\bf Conclusions}.  This section should not be longer than half of a page, and having no more than one or two sentences under each heading is advised.
+    \subsection{Aims}
+
+    To determine in which cases implementing algorithms in web assembly is the right choice to make
+
+    \subsection{Method}
+
+    Implement a range of image processing algorithms in both JavaScript and Web Assembly and measure using a variety of metrics.
+
+    \subsection{Results}
+
+    \subsection{Conclusions}
 \end{abstract}
 
 \begin{keywords}
     Put a few keywords here.
 \end{keywords}
 
-\section{Introduction}
-This section briefly introduces the general project background, the research question you are addressing, and the project objectives.  It should be between 2 to 3 pages in length.  Do not change the font sizes or line spacing in order to put in more text.
+\newpage
 
-Note that the whole report, including the references, should not be longer than 20 pages in length.  The system will not accept any report longer than 20 pages.  It should be noted that not all the details of the work carried out in the project can be represented in 20 pages.  It is therefore vital that the Project Log book be kept up to date as this will be used as supplementary material when the project paper is marked.  There should be between 10 and 20 referenced papers---references to Web based pages should be less than 10\%.
+\section{Introduction}
+
+Image processing is a widely used technique for a range of problems. In most modern cameras there will be some aspect of image processing at the time of capture, whether it is enhancements to the image or just the formatting to a file type, such as JPEG. After capture there is often additional image processing, be it applying filters or compression for upload online. Sophisticated image processing techniques don't just have benefit for the sharing of photos, but are also used medically, such as for processing CT images \cite{zhang2017applications}.
+
+% Is it useful to go into more depth about the applications of image processing?
+
+The performance of image processing was greatly improved with the introduction of Digital Signal Processors (DSP), these are specialised chips for performing signal processing tasks, such as the discrete cosine transform. In mobile devices these are now often integrated into the System on a Chip (SOC) \cite{angoletta2008digital}, however with the increase in computational performance since DSPs were introduced, these algorithms can also be ran on the main processor.
+
+Traditionally image processing has been done in applications like Adobe Photoshop, however as browser market share is increasing web based photo editors are becoming more common. In a study by Forrester Consulting, workers are spending 1/3 of the work day on average in a web browser, so it is an area lots of companies are targeting to launch new products \cite{cloud_worker}.
+
+In 1995 JavaScript was introduced as a method for introducing interactivity to web applications, since then there were some improvements made for programmers who wanted to perform computationally intensive tasks with their website, such as Web Workers, introduced in 2009 \cite{Hickson}. However one of the biggest steps forward is the introduction of Web Assembly in 2017, allowing for assembly code to be executed by web browsers \cite{haas2017bringing}.
+
+Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript along with benefits such as type safety using static types, where JavaScript uses dynamic types. TypeScript works to try and solve this problem, but is just a transpiler to JavaScript, where Web Assembly allows for type checking at runtime.
+
+\subsection{Objectives}
+
+For this project I want to implement a range of image processing algorithms in both Web Assembly and JavaScript and compare their performance. For Web Assembly I will be using the Rust programming language as it is one of the most popular languages for web assembly and contains a range of features to make creating web assembly easier.
+
+% This needs more detail
+
+
+
+
+
+
+
+
+\newpage
+
 
 \section{Related Work}
-This section presents a survey of existing work on the problems that this project addresses.  it should be between 2 to 4 pages in length.  The rest of this section shows the formats of subsections as well as some general formatting information for tables, figures, references and equations.
 
-\subsection{Main Text}
+\subsection{Web Assembly Image Processing in use}
 
-The font used for the main text should be Times New Roman (Times) and the font size should be 12.  The first line of all paragraphs should be indented by 0.25in, except for the first paragraph of each section, subsection, subsubsection etc. (the paragraph immediately after the header) where no indentation is needed.
+Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly, this approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB \cite{nextjs}. As this was replacing a package with code in the project, it lead to a large increase in the amount of code to maintain, but this could be abstracted to a package. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
 
-\subsection{Figures and Tables}
-In general, figures and tables should not appear before they are cited.  Place figure captions below the figures; place table titles above the tables.  If your figure has two parts, for example, include the labels ``(a)'' and ``(b)'' as part of the artwork.  Please verify that figures and tables you mention in the text actually exist.  make sure that all tables and figures are numbered as shown in Table \ref{units} and Figure 1.
-%sort out your own preferred means of inserting figures
+\subsection{Performance of Web Assembly}
 
-\begin{table}[htb]
-    \centering
-    \caption{UNITS FOR MAGNETIC PROPERTIES}
-    \vspace*{6pt}
-    \label{units}
-    \begin{tabular}{ccc}\hline\hline
-        Symbol & Quantity & Conversion from Gaussian \\ \hline
-    \end{tabular}
-\end{table}
+\subsection{Current Image Processing Techniques}
 
-\subsection{References}
 
-The list of cited references should appear at the end of the report, ordered alphabetically by the surnames of the first authors.  References cited in the main text should use Harvard (author, date) format.  When citing a section in a book, please give the relevant page numbers, as in \cite[p293]{budgen}.  When citing, where there are either one or two authors, use the names, but if there are more than two, give the first one and use ``et al.'' as in  , except where this would be ambiguous, in which case use all author names.
 
-You need to give all authors' names in each reference.  Do not use ``et al.'' unless there are more than five authors.  Papers that have not been published should be cited as ``unpublished'' \cite{euther}.  Papers that have been submitted or accepted for publication should be cited as ``submitted for publication'' as in \cite{futher} .  You can also cite using just the year when the author's name appears in the text, as in ``but according to Futher \citeyear{futher}, we \dots''.  Where an authors has more than one publication in a year, add `a', `b' etc. after the year.
+
+
+\newpage
 
 \section{Solution}
 
