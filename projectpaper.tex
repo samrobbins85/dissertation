@@ -74,14 +74,47 @@ Squoosh by Google Chrome is a tool to compress images and implements many of its
 
 Alongside image processing, Web Assembly is also used for a range of other purposes. Figma is a tool for designers, and implemented Web Assembly to improve their load times 3$\times$ compared to their previous solution which translated assembly to JavaScript \cite{figmawasm}.
 
-However, web assembly is not always the best solution, as when the same author was creating a JavaScript bundler they recommend against using Web Assembly \cite{esbuild}. This is because JavaScript bundlers are ran natively on the computer, rather than in a browser, a method enabled by solutions such as Node.js. Node.js has very similar performance to browsers as it uses the same v8 browser engine as Google Chrome does, however Node.js also means that native code can be ran, which the author observed to provide a 10$\times$ speedup.
+However, web assembly is not always the best solution, as when the same author was creating a JavaScript bundler they recommend against using Web Assembly \cite{esbuild}. This is because JavaScript bundlers are ran natively on the computer, rather than in a browser, a method enabled by solutions such as Node.js. Node.js has very similar performance to browsers as it uses the same v8 browser engine as Google Chrome does, however Node.js also means that native code can be ran, which the author observed to provide a 10$\times$ speed up.
 
-This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns were observed of 2.5$\times$ in Google Chrome compared to the native code. In this research a range of algorithms were tested, including bzip2 and h264.
+This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns were observed of 2.5$\times$ in Google Chrome compared to the native code. These benchmarks are taken from SPEC CPU2006 and SPEC CPU2017. A sample of these results are shown in Table \ref{native}
 
-% Expand this point
+\begin{table}[htb]
+    \centering
+    \caption{Comparison of algorithms between native and wasm}
+    \vspace*{6pt}
+    \label{native}
+    \begin{tabular}{cccc}\hline\hline
+        Benchmark & Field                   & Native execution time & Google Chrome execution time \\ \hline
+        bzip2     & Compression             & 370                   & 864                          \\
+        mcf       & Combinatorial           & 221                   & 180                          \\
+        milc      & Chromodynamics          & 375                   & 369                          \\
+        namd      & Molecular Dynamics      & 271                   & 369                          \\
+        gobmk     & Artificial Intelligence & 352                   & 537
+    \end{tabular}
+\end{table}
 
+As you can see from these results, Native isn't guaranteed to be faster than Web Assembly, however this is often the case.
+\newpage
 \subsection{Current Image Processing Techniques}
 
+One of the most popular image processing libraries for JavaScript is Sharp with over 1,700,000 weekly downloads, this uses native code in the form of libvips and claims to be the fastest module for resizing. A slightly less popular library is jimp with over 1,400,000 weekly downloads, the difference with this library is that it is written entirely in JavaScript and so can be ran in the browser. The difference between these and other libraries was measured on a task of resizing an image \cite{sharp}. These results are shown in Table \ref{imgproc}
+
+\begin{table}[htb]
+    \centering
+    \caption{Performance of Image Processing Libraries}
+    \vspace*{6pt}
+    \label{imgproc}
+    \begin{tabular}{ccc}\hline\hline
+        Library     & Best ops/sec & Best speedup \\ \hline
+        jimp        & 0.77         & 1.0          \\
+        mapnik      & 3.39         & 4.4          \\
+        gm          & 4.33         & 5.6          \\
+        imagemagick & 4.39         & 5.7          \\
+        sharp       & 25.60        & 33.2
+    \end{tabular}
+\end{table}
+
+This shows native libraries being significantly faster than the solution in pure JavaScript, which means that even with the slowdown of web assembly compared to native code as discussed before, web assembly should still outperform JavaScript in this regard.
 
 
 
@@ -93,17 +126,17 @@ This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns w
 This section presents the solutions to the problems in detail.  The design and implementation details should all be placed in this section.  You may create a number of subsections, each focussing on one issue.
 
 This section should be between 4 to 7 pages in length.
-
+\newpage
 \section{Results}
 
 this section presents the results of the solutions.  It should include information on experimental settings.  The results should demonstrate the claimed benefits/disadvantages of the proposed solutions.
 
 This section should be between 2 to 3 pages in length.
-
+\newpage
 \section{Evaluation}
 
 This section should between 1 to 2 pages in length.
-
+\newpage
 \section{Conclusions}
 
 This section summarises the main points of this paper.  Do not replicate the abstract as the conclusion.  A conclusion might elaborate on the importance of the work or suggest applications and extensions.  This section should be no more than 1 page in length.
@@ -126,7 +159,7 @@ The page lengths given for each section are indicative and will vary from projec
     \end{tabular}
 \end{table}
 
-
+\newpage
 \bibliography{projectpaper}
 
 
