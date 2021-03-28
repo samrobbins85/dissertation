@@ -61,13 +61,6 @@ For this project I want to implement a range of image processing algorithms in b
 
 % This needs more detail
 
-
-
-
-
-
-
-
 \newpage
 
 
@@ -78,6 +71,14 @@ For this project I want to implement a range of image processing algorithms in b
 Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly, this approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB \cite{nextjs}. As this was replacing a package with code in the project, it lead to a large increase in the amount of code to maintain, but this could be abstracted to a package. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
 
 \subsection{Performance of Web Assembly}
+
+Alongside image processing, Web Assembly is also used for a range of other purposes. Figma is a tool for designers, and implemented Web Assembly to improve their load times 3$\times$ compared to their previous solution which translated assembly to JavaScript \cite{figmawasm}.
+
+However, web assembly is not always the best solution, as when the same author was creating a JavaScript bundler they recommend against using Web Assembly \cite{esbuild}. This is because JavaScript bundlers are ran natively on the computer, rather than in a browser, a method enabled by solutions such as Node.js. Node.js has very similar performance to browsers as it uses the same v8 browser engine as Google Chrome does, however Node.js also means that native code can be ran, which the author observed to provide a 10$\times$ speedup.
+
+This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns were observed of 2.5$\times$ in Google Chrome compared to the native code. In this research a range of algorithms were tested, including bzip2 and h264.
+
+% Expand this point
 
 \subsection{Current Image Processing Techniques}
 
