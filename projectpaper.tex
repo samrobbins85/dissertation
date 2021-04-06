@@ -6,7 +6,7 @@
 \citationmode{abbr}
 \bibliographystyle{agsm}
 
-\title{Formatting Template for the 3rd Year Project Paper}
+\title{Image Processing using JavaScript and Web Assembly}
 \author{} % leave; your name goes into \student{}
 \student{Sam Robbins}
 \supervisor{Tom Friedetzky}
@@ -51,9 +51,13 @@ The performance of image processing was greatly improved with the introduction o
 
 Traditionally image processing has been done in applications like Adobe Photoshop, however as browser market share is increasing web based photo editors are becoming more common. In a study by Forrester Consulting, workers are spending 1/3 of the work day on average in a web browser, so it is an area lots of companies are targeting to launch new products \cite{cloud_worker}.
 
+% Look more into is it a good idea, not just if it's used
+
 In 1995 JavaScript was introduced as a method for introducing interactivity to web applications, since then there were some improvements made for programmers who wanted to perform computationally intensive tasks with their website, such as Web Workers, introduced in 2009 \cite{Hickson}. However one of the biggest steps forward is the introduction of Web Assembly in 2017, allowing for assembly code to be executed by web browsers \cite{haas2017bringing}.
 
 Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript along with benefits such as type safety using static types, where JavaScript uses dynamic types. TypeScript works to try and solve this problem, but is just a transpiler to JavaScript, where Web Assembly allows for type checking at runtime.
+
+% Client vs Server based
 
 \subsection{Objectives}
 
@@ -61,20 +65,33 @@ For this project I want to implement a range of image processing algorithms in b
 
 % This needs more detail
 
+\subsection{Research Question}
+
+My Research question is to find in which cases Web Assembly offers a benefit over JavaScript, finding this out by implementing image processing algorithms using both mechanisms.
+
 \newpage
 
 
 \section{Related Work}
 
+\subsection{Language options for web assembly}
+
 \subsection{Web Assembly Image Processing in use}
 
-Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly, this approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB \cite{nextjs}. As this was replacing a package with code in the project, it lead to a large increase in the amount of code to maintain, but this could be abstracted to a package. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
+Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly, this approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB \cite{nextjs}. As this was replacing a package with code in the project, it led to a large increase in the amount of code to maintain, but this could be abstracted to a package. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
+
+% Add comparison for the 27MB as to what the overall size is
+% Clarify all
 
 \subsection{Performance of Web Assembly}
 
 Alongside image processing, Web Assembly is also used for a range of other purposes. Figma is a tool for designers, and implemented Web Assembly to improve their load times 3$\times$ compared to their previous solution which translated assembly to JavaScript \cite{figmawasm}.
 
+% Why are load times important
+
 However, web assembly is not always the best solution, as when the same author was creating a JavaScript bundler they recommend against using Web Assembly \cite{esbuild}. This is because JavaScript bundlers are ran natively on the computer, rather than in a browser, a method enabled by solutions such as Node.js. Node.js has very similar performance to browsers as it uses the same v8 browser engine as Google Chrome does, however Node.js also means that native code can be ran, which the author observed to provide a 10$\times$ speed up.
+
+% Add detail of what a JavaScript bundler is
 
 This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns were observed of 2.5$\times$ in Google Chrome compared to the native code. These benchmarks are taken from SPEC CPU2006 and SPEC CPU2017. A sample of these results are shown in Table \ref{native}
 
@@ -93,7 +110,10 @@ This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns w
     \end{tabular}
 \end{table}
 
-As you can see from these results, Native isn't guaranteed to be faster than Web Assembly, however this is often the case.
+As one can see from these results, Native isn't guaranteed to be faster than Web Assembly, however this is often the case.
+
+
+
 \newpage
 \subsection{Current Image Processing Techniques}
 
@@ -114,11 +134,16 @@ One of the most popular image processing libraries for JavaScript is Sharp with 
     \end{tabular}
 \end{table}
 
+% Add description of what the table headings mean
+
 This shows native libraries being significantly faster than the solution in pure JavaScript, which means that even with the slowdown of web assembly compared to native code as discussed before, web assembly should still outperform JavaScript in this regard.
 
 \subsection{Image formats}
 
 There are a range of image formats in use, and the encoding and decoding of images is a computationally intensive task. The Web Almanac studies over 7 million websites and found that 40.26\% of images are of the jpg image format and 26.90\% in png \cite{webalmanac}. JPEG is a high performance image codec with a study by Cloudinary showing to to have an encoding speed of 49 MP/s and a decoding speed of 108 MP/s \cite{cloudinary}. JPEG has both lossless and lossy versions, and in a study of lossless compression of 382 images, these results are shown in Table \ref{speedratio} \cite{ukrit2011survey}
+
+% Add more details of what hardware this was one
+% Don't include numbers if you don't have comparison
 
 \begin{table}[htb]
     \centering
@@ -134,7 +159,7 @@ There are a range of image formats in use, and the encoding and decoding of imag
     \end{tabular}
 \end{table}
 
-As you can see from these results, the compression ratio is very comparable between the various implementations of JPEG and PNG, however the compression speed greatly differs, with some JPEG algorithms significantly outperforming PNG.
+As one can see from these results, the compression ratio is very comparable between the various implementations of JPEG and PNG, however the compression speed greatly differs, with some JPEG algorithms significantly outperforming PNG.
 
 \newpage
 
