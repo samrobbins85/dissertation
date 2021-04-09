@@ -2,10 +2,10 @@
 \usepackage{times}
 \usepackage{durhampaper}
 \usepackage{harvard}
-
+\usepackage{float}
 \citationmode{abbr}
 \bibliographystyle{agsm}
-
+\usepackage[dvipsnames]{xcolor}
 \title{Image Processing using JavaScript and Web Assembly}
 \author{} % leave; your name goes into \student{}
 \student{Sam Robbins}
@@ -45,29 +45,29 @@
 
 Image processing is a widely used technique for a range of problems. In most modern cameras there will be some aspect of image processing at the time of capture, whether it is enhancements to the image or just the formatting to a file type, such as JPEG. After capture there is often additional image processing, be it applying filters or compression for upload online. Sophisticated image processing techniques don't just have benefit for the sharing of photos, but are also used medically, such as for processing CT images \cite{zhang2017applications}.
 
-% Is it useful to go into more depth about the applications of image processing?
+The performance of image processing was greatly improved with the introduction of Digital Signal Processors (DSP), these are specialized chips for performing signal processing tasks, such as the discrete cosine transform. In mobile devices these are now often integrated into the System on a Chip (SOC) \cite{angoletta2008digital}, however with the increase in computational performance since DSPs were introduced, these algorithms can also be run on the main processor.
 
-The performance of image processing was greatly improved with the introduction of Digital Signal Processors (DSP), these are specialised chips for performing signal processing tasks, such as the discrete cosine transform. In mobile devices these are now often integrated into the System on a Chip (SOC) \cite{angoletta2008digital}, however with the increase in computational performance since DSPs were introduced, these algorithms can also be ran on the main processor.
-
-Traditionally image processing has been done in applications like Adobe Photoshop, however as browser market share is increasing web based photo editors are becoming more common. In a study by Forrester Consulting, workers are spending 1/3 of the work day on average in a web browser, so it is an area lots of companies are targeting to launch new products \cite{cloud_worker}.
+Traditionally image processing has been done in applications like Adobe Photoshop, however as browser market share is increasing web based photo editors are becoming more common. In a study by Forrester Consulting, workers are spending 1/3 of the work day on average in a web browser, so it is an area many companies are targeting to launch new products \cite{cloud_worker}.
 
 % Look more into is it a good idea, not just if it's used
 
-In 1995 JavaScript was introduced as a method for introducing interactivity to web applications, since then there were some improvements made for programmers who wanted to perform computationally intensive tasks with their website, such as Web Workers, introduced in 2009 \cite{Hickson}. However one of the biggest steps forward is the introduction of Web Assembly in 2017, allowing for assembly code to be executed by web browsers \cite{haas2017bringing}.
+In 1995 JavaScript was introduced as a method for introducing interactivity to web applications, since then there were some improvements made for programmers who wanted to perform computationally intensive tasks with their website, such as Web Workers, introduced in 2009 \cite{Hickson}. However, one of the biggest steps forward is the introduction of Web Assembly in 2017, allowing for assembly code to be executed by web browsers \cite{haas2017bringing}.
 
 Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript along with benefits such as type safety using static types, where JavaScript uses dynamic types. TypeScript works to try and solve this problem, but is just a transpiler to JavaScript, where Web Assembly allows for type checking at runtime.
 
-% Client vs Server based
+% Transpiler might need some discussion here
+\color{Mulberry}
+When it comes to producing a web application, the computation can be run on either the client (web browser) or the server, each coming with advantages and disadvantages. Running code on the server allows for the site to be performant on low power devices such as mobile phones, however by running code on the client you don't need to send data between the client and server on every interaction. This allows the site to continue being ran during times of intermittent connection and reduces the latency of operations. Running code on the client also allows for the site to be turned into a progressive web app, which only need to be connected to the internet once for installation similarly to an app \cite{biorn2017progressive}.
+\color{black}
 
 \subsection{Objectives}
 
-For this project I want to implement a range of image processing algorithms in both Web Assembly and JavaScript and compare their performance. For Web Assembly I will be using the Rust programming language as it is one of the most popular languages for web assembly and contains a range of features to make creating web assembly easier.
+This project will implement a range of image processing algorithms in both Web Assembly and JavaScript and compare their performance.
 
-% This needs more detail
 
 \subsection{Research Question}
 
-My Research question is to find in which cases Web Assembly offers a benefit over JavaScript, finding this out by implementing image processing algorithms using both mechanisms.
+The Research question is to find in which cases Web Assembly offers a benefit over JavaScript, finding this out by implementing image processing algorithms using both mechanisms.
 
 \newpage
 
@@ -75,27 +75,52 @@ My Research question is to find in which cases Web Assembly offers a benefit ove
 \section{Related Work}
 
 \subsection{Language options for web assembly}
+\color{Mulberry}
+
+Web Assembly is compatible with any language that compiles to assembly, meaning there is a large range of languages to choose from. However, as web assembly doesn't currently have a garbage collector, it is most efficient to choose a language that doesn't do garbage collection, such as C \cite{haas2017bringing}. Alongside C, Rust is another language that doesn't have garbage collection and has been advertises itself as good to use for Web Assembly. One advantage of using Rust is that it has a library called wasm-bindgen that allows for binding functions and other features in Rust to the JavaScript produced, allowing for multiple functions to be included in one web assembly file \cite{wasmbindgen}. It also provides availability for using native browser functions, such as \texttt{window.alert}, within your Rust functions.
+
+\color{black}
+
+% Might need to discuss what garbage collection is
+% Garbage collection in WASM https://github.com/WebAssembly/proposals/issues/16
+% WASM-bindgen
+
+\subsection{Important metrics}
+\color{Mulberry}
+
+There are a range of metrics that are important when evaluating the performance of web tools. Response time is one such metric, and measures the time it takes to receive feedback from an operation. This applies for both the time it takes for a page to load and when doing something on a webpage. Research by Neilson discovered that \cite{nielsen1994usability}:
+\begin{itemize}
+    \item 0.1 second is the limit for instantaneous feeling
+    \item 1.0 seconds is the limit for the user's flow of thought to remain uninterrupted
+    \item 10 seconds is the limit for keeping the user's attention.
+\end{itemize}
+
+Making these results actionable, Google introduced Core Web Vitals, which are metrics about how fast a page loads to determine how well it performs \cite{webvitals}. Largest Contentful Paint measures the time taken for most of the page to be loaded in, and suggests that it should occur within 2.5 seconds to be classified as “Good”.
+
+\color{black}
+
+
 
 \subsection{Web Assembly Image Processing in use}
 
-Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly, this approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB \cite{nextjs}. As this was replacing a package with code in the project, it led to a large increase in the amount of code to maintain, but this could be abstracted to a package. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
+Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly, this approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB from a total installed size of 96.5 MB \cite{nextjs}. As this was replacing a package with code in the project, it led to a large increase in the amount of code to maintain, but this could be abstracted to a package. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
 
-% Add comparison for the 27MB as to what the overall size is
-% Clarify all
+% Total installed size from https://nextjs.org/blog/next-10-1
+
+
 
 \subsection{Performance of Web Assembly}
 
 Alongside image processing, Web Assembly is also used for a range of other purposes. Figma is a tool for designers, and implemented Web Assembly to improve their load times 3$\times$ compared to their previous solution which translated assembly to JavaScript \cite{figmawasm}.
 
-% Why are load times important
+\color{Mulberry}
 
-However, web assembly is not always the best solution, as when the same author was creating a JavaScript bundler they recommend against using Web Assembly \cite{esbuild}. This is because JavaScript bundlers are ran natively on the computer, rather than in a browser, a method enabled by solutions such as Node.js. Node.js has very similar performance to browsers as it uses the same v8 browser engine as Google Chrome does, however Node.js also means that native code can be ran, which the author observed to provide a 10$\times$ speed up.
-
+However, when running code natively, Web Assembly may not be the best solution. A JavaScript bundler is a program which creates large files from the smaller JavaScript files needed for a web application, this is useful as better performance can be achieved by sending a few large files compared to lots of smaller files. The author of a native JavaScript bundler observed that there was a 10$\times$ speed improvement by running it natively, compared to using web assembly \cite{esbuild}.
+\color{black}
 % Add detail of what a JavaScript bundler is
 
-This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns were observed of 2.5$\times$ in Google Chrome compared to the native code. These benchmarks are taken from SPEC CPU2006 and SPEC CPU2017. A sample of these results are shown in Table \ref{native}
-
-\begin{table}[htb]
+This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns were observed of 2.5$\times$ in Google Chrome compared to the native code. These benchmarks are taken from SPEC CPU2006 and SPEC CPU2017. A sample of these results are shown in Table \ref{native}.
+\begin{table}[H]
     \centering
     \caption{Comparison of algorithms between native and wasm}
     \vspace*{6pt}
@@ -114,10 +139,9 @@ As one can see from these results, Native isn't guaranteed to be faster than Web
 
 
 
-\newpage
 \subsection{Current Image Processing Techniques}
 
-One of the most popular image processing libraries for JavaScript is Sharp with over 1,700,000 weekly downloads, this uses native code in the form of libvips and claims to be the fastest module for resizing. A slightly less popular library is jimp with over 1,400,000 weekly downloads, the difference with this library is that it is written entirely in JavaScript and so can be ran in the browser. The difference between these and other libraries was measured on a task of resizing an image \cite{sharp}. These results are shown in Table \ref{imgproc}
+One of the most popular image processing libraries for JavaScript is Sharp with over 1,700,000 weekly downloads, this uses native code in the form of libvips and claims to be the fastest module for resizing. A slightly less popular library is jimp with over 1,400,000 weekly downloads, the difference with this library is that it is written entirely in JavaScript and so can be run in the browser. The difference between these and other libraries was measured on a task of resizing an image \cite{sharp}. These results are shown in Table \ref{imgproc}.
 
 \begin{table}[htb]
     \centering
@@ -140,12 +164,12 @@ This shows native libraries being significantly faster than the solution in pure
 
 \subsection{Image formats}
 
-There are a range of image formats in use, and the encoding and decoding of images is a computationally intensive task. The Web Almanac studies over 7 million websites and found that 40.26\% of images are of the jpg image format and 26.90\% in png \cite{webalmanac}. JPEG is a high performance image codec with a study by Cloudinary showing to to have an encoding speed of 49 MP/s and a decoding speed of 108 MP/s \cite{cloudinary}. JPEG has both lossless and lossy versions, and in a study of lossless compression of 382 images, these results are shown in Table \ref{speedratio} \cite{ukrit2011survey}
+There are a range of image formats in use, and the encoding and decoding of images is a computationally intensive task. The Web Almanac studies over 7 million websites and found that 40.26\% of images are of the jpg image format and 26.90\% in png \cite{webalmanac}. JPEG is a high performance image codec with a study by Cloudinary showing to to have an encoding speed of 49 MP/s and a decoding speed of 108 MP/s \cite{cloudinary}. JPEG has both lossless and lossy versions, and in a study of lossless compression of 382 images, these results are shown in Table \ref{speedratio} \cite{ukrit2011survey}.
 
 % Add more details of what hardware this was one
 % Don't include numbers if you don't have comparison
 
-\begin{table}[htb]
+\begin{table}[H]
     \centering
     \caption{Compression speed and ratio for various algorithms}
     \vspace*{6pt}
@@ -165,9 +189,13 @@ As one can see from these results, the compression ratio is very comparable betw
 
 \section{Solution}
 
-This section presents the solutions to the problems in detail.  The design and implementation details should all be placed in this section.  You may create a number of subsections, each focussing on one issue.
+\subsection{Platform}
 
-This section should be between 4 to 7 pages in length.
+Web Assembly can run in a wide variety of places, there are the different browsers, Chrome, Firefox and Safari, along with different platforms, web and mobile. Each of these will implement their processing of both JavaScript and Web Assembly differently, which makes choosing the platform an important topic. With Chrome having over 64\% market share, it is a good choice as the results are most widely applicable \cite{webmarketshare}.
+
+While the browser itself is important, the browser engine is the thing I want to measure. This is the processor inside the browser which will execute JavaScript and Web Assembly. The browser engine inside Google Chrome is called V8, and is open source, allowing for other projects to use it. One such project is Node.js which allows you to run JavaScript from the command line. This has become incredibly popular for the construction of web backends, with over 78,000 stars on GitHub. The benefit of using this over a browser is that the metrics will be transferable to browsers, but allows me to reduce the number of external factors that impact the computation. Examples of this is that a browser will manage the resources available to each of its tabs, meaning that having more tabs open could affect the result, whereas the resources of Node.js are managed by the operating system. This also makes it easier to collect metrics such as memory usage and timing and the process runs as a system process.
+
+
 \newpage
 \section{Results}
 
