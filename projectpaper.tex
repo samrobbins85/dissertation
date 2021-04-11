@@ -3,6 +3,7 @@
 \usepackage{durhampaper}
 \usepackage{harvard}
 \usepackage{float}
+\usepackage{graphicx}
 \citationmode{abbr}
 \bibliographystyle{agsm}
 \usepackage[dvipsnames]{xcolor}
@@ -194,6 +195,43 @@ As one can see from these results, the compression ratio is very comparable betw
 Web Assembly can run in a wide variety of places, there are the different browsers, Chrome, Firefox and Safari, along with different platforms, web and mobile. Each of these will implement their processing of both JavaScript and Web Assembly differently, which makes choosing the platform an important topic. With Chrome having over 64\% market share, it is a good choice as the results are most widely applicable \cite{webmarketshare}.
 
 While the browser itself is important, the browser engine is the thing I want to measure. This is the processor inside the browser which will execute JavaScript and Web Assembly. The browser engine inside Google Chrome is called V8, and is open source, allowing for other projects to use it. One such project is Node.js which allows you to run JavaScript from the command line. This has become incredibly popular for the construction of web backends, with over 78,000 stars on GitHub. The benefit of using this over a browser is that the metrics will be transferable to browsers, but allows me to reduce the number of external factors that impact the computation. Examples of this is that a browser will manage the resources available to each of its tabs, meaning that having more tabs open could affect the result, whereas the resources of Node.js are managed by the operating system. This also makes it easier to collect metrics such as memory usage and timing and the process runs as a system process.
+
+\subsection{Use of existing libraries}
+
+In order to speed up the development of areas I'm not measuring, I use existing image processing libraries to do some of the work. For Rust these libraries are referred to as “crates” and for JavaScript these are provided as npm libraries. Rust is both a newer language, and less popular than JavaScript, meaning that it has a smaller range of available libraries, so when it came to choosing a crate, I only really had one choice, the \texttt{image} crate. With JavaScript there is more choice, allowing me to choose the one that had the features I wanted, I settled on Jimp as it has a wide range of features and is very popular.
+
+% There's an opportunity to discuss other JS image processing solutions if I wanted to.
+% Might be useful to have statistics to back this up, but I don't want to add too many citations
+
+\subsection{Choice of algorithms}
+
+There are a wide range of algorithms to choose from when it comes to image processing. The main factor to consider when choosing an algorithm for this project is how complex it is. This is because I want the algorithm itself to take enough time that the other processing involved such as copying from memory takes a comparatively negligible amount of time, improving the accuracy of the results captured. In practice this means discounting algorithms that look at each pixel and perform a defined action on it, such as brightness. When editing photos, the operation that tends to take the most time is exporting the images to JPEG, so I decided to explore implementing the JPEG algorithm \cite{jpeg}.
+
+\subsection{Implementation of JPEG}
+
+For both implementations, I started with prewritten code to decode an image into a long string of r,g,b,a values and the width and height of the image. The first step is the transformation of the image from the r,g,b colour space into the YCbCr colour space. Doing this is the simple task of calculating fractions based on the r,g and b values, so is not especially intensive.
+
+Next is downsampling, this isn't required by the JPEG standard, but they offer the ability to use it. This reduces the resolution of the Cb and Cr components. It is done on these components as brightness (Y) is much more noticeable to the human eye compared to the other components, meaning the resolution can be reduced without a noticeable decrease in quality. To do this, each $2\times 2$ pixel area is averaged to a single pixel. On the borders where it isn't possible to get this area, the average is just calculated based on the available pixels.
+
+For the next part of the algorithm, each component is split into $8\times 8$ blocks. This exhibits the same problem as the previous step as at the edges a full $8\times 8$ block may not be possible. My implementation solves this by replacing the pixels with black, however other implementations may use an average of the existing pixels to ensure there is less influence on the image.
+
+The next step, the discrete cosine transform, is the most intensive step of the whole algorithm. The simplest way to implement this is to multiply each $8\times 8$ matrix by another $8\times 8$ matrix. For each entry in the resulting matrix there will be $8$ multiplications, leading to there being $8\times 64 = 512$ multiplications in total per block. The design of this transform results in high absolute values in the top left of the matrix, with low absolute values in the bottom right.
+
+The next step is quantization, this is a lossy operation to keep only the lower frequency data and the human eye struggles to distinguish the strength of high frequency brightness variation. In order to apply quantization, for each element in the matrix, it is divided by the value in the same position of a quantization matrix and rounded. JPEG has a variety of quantization matrices, allowing for the user to specify their desired quality, with the matrices having lower values for higher qualities. Implementing the quantization matrix will lead to many of the elements being zero, allowing for easier encoding.
+
+This encoding begins with run length encoding, intended for allowing for the encoding of runs of zeroes. This algorithm uses "zig-zag encoding" in which the order in which the elements are processed is defined by a zig-zag pattern, shown in the image below, taken from \cite{jpeg}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{zigzag.png}
+    \caption{Zig-zag order}
+\end{figure}
+
+\subsection{Testing}
+
+
+
+
 
 
 \newpage
