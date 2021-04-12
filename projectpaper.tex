@@ -81,18 +81,14 @@ The Research question is to find in which cases Web Assembly offers a benefit ov
 \section{Related Work}
 
 \subsection{Language options for web assembly}
-\color{Mulberry}
 
 Web Assembly is compatible with any language that compiles to assembly, meaning there is a large range of languages to choose from. However, as web assembly doesn't currently have a garbage collector, it is most efficient to choose a language that doesn't do garbage collection, such as C \cite{haas2017bringing}. Alongside C, Rust is another language that doesn't have garbage collection and advertises itself as good to use for Web Assembly. One advantage of using Rust is that it has a library called wasm-bindgen that allows for binding functions and other features in Rust to the JavaScript produced, allowing for multiple functions to be included in one web assembly file \cite{wasmbindgen}. It also provides availability for using native browser functions, such as \texttt{window.alert}, within your Rust functions.
-
-\color{black}
 
 % Might need to discuss what garbage collection is
 % Garbage collection in WASM https://github.com/WebAssembly/proposals/issues/16
 % WASM-bindgen
 
 \subsection{Important metrics}
-\color{Mulberry}
 
 There are a range of metrics that are important when evaluating the performance of web tools. Response time is one such metric, and measures the time it takes to receive feedback from an operation. This applies for both the time it takes for a page to load and when doing something on a webpage. Research by Neilson discovered that \cite{nielsen1994usability}:
 \begin{itemize}
@@ -103,7 +99,6 @@ There are a range of metrics that are important when evaluating the performance 
 
 Making these results actionable, Google introduced Core Web Vitals, which are metrics about how fast a page loads to determine how well it performs \cite{webvitals}. Largest Contentful Paint measures the time taken for most of the page to be loaded in, and suggests that it should occur within 2.5 seconds to be classified as “Good”.
 
-\color{black}
 
 
 
@@ -119,11 +114,8 @@ Squoosh by Google Chrome is a tool to compress images and implements many of its
 
 Alongside image processing, Web Assembly is also used for a range of other purposes. Figma is a tool for designers, and implemented Web Assembly to improve their load times 3$\times$ compared to their previous solution which translated assembly to JavaScript \cite{figmawasm}.
 
-\color{Mulberry}
 
 However, when running code natively, Web Assembly may not be the best solution. A JavaScript bundler is a program which creates large files from the smaller JavaScript files needed for a web application, this is useful as better performance can be achieved by sending a few large files compared to lots of smaller files. The author of a native JavaScript bundler observed that there was a 10$\times$ speed improvement by running it natively, compared to using web assembly \cite{esbuild}.
-\color{black}
-% Add detail of what a JavaScript bundler is
 
 This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns were observed of 2.5$\times$ in Google Chrome compared to the native code. These benchmarks are taken from SPEC CPU2006 and SPEC CPU2017. A sample of these results are shown in Table \ref{native}.
 \begin{table}[H]
