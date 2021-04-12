@@ -56,10 +56,13 @@ In 1995 JavaScript was introduced as a method for introducing interactivity to w
 
 Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript along with benefits such as type safety using static types, where JavaScript uses dynamic types. TypeScript works to try and solve this problem, but is just a transpiler to JavaScript, where Web Assembly allows for type checking at runtime.
 
-% Transpiler might need some discussion here
-\color{Mulberry}
 When it comes to producing a web application, the computation can be run on either the client (web browser) or the server, each coming with advantages and disadvantages. Running code on the server allows for the site to be performant on low power devices such as mobile phones, however by running code on the client you don't need to send data between the client and server on every interaction. This allows the site to continue being ran during times of intermittent connection and reduces the latency of operations. Running code on the client also allows for the site to be turned into a progressive web app, which only need to be connected to the internet once for installation similarly to an app \cite{biorn2017progressive}.
-\color{black}
+
+\subsection{How web assembly works}
+
+
+
+
 
 \subsection{Objectives}
 
@@ -70,6 +73,8 @@ This project will implement a range of image processing algorithms in both Web A
 
 The Research question is to find in which cases Web Assembly offers a benefit over JavaScript, finding this out by implementing image processing algorithms using both mechanisms.
 
+
+
 \newpage
 
 
@@ -78,7 +83,7 @@ The Research question is to find in which cases Web Assembly offers a benefit ov
 \subsection{Language options for web assembly}
 \color{Mulberry}
 
-Web Assembly is compatible with any language that compiles to assembly, meaning there is a large range of languages to choose from. However, as web assembly doesn't currently have a garbage collector, it is most efficient to choose a language that doesn't do garbage collection, such as C \cite{haas2017bringing}. Alongside C, Rust is another language that doesn't have garbage collection and has been advertises itself as good to use for Web Assembly. One advantage of using Rust is that it has a library called wasm-bindgen that allows for binding functions and other features in Rust to the JavaScript produced, allowing for multiple functions to be included in one web assembly file \cite{wasmbindgen}. It also provides availability for using native browser functions, such as \texttt{window.alert}, within your Rust functions.
+Web Assembly is compatible with any language that compiles to assembly, meaning there is a large range of languages to choose from. However, as web assembly doesn't currently have a garbage collector, it is most efficient to choose a language that doesn't do garbage collection, such as C \cite{haas2017bringing}. Alongside C, Rust is another language that doesn't have garbage collection and advertises itself as good to use for Web Assembly. One advantage of using Rust is that it has a library called wasm-bindgen that allows for binding functions and other features in Rust to the JavaScript produced, allowing for multiple functions to be included in one web assembly file \cite{wasmbindgen}. It also provides availability for using native browser functions, such as \texttt{window.alert}, within your Rust functions.
 
 \color{black}
 
@@ -200,6 +205,8 @@ While the browser itself is important, the browser engine is the thing I want to
 
 In order to speed up the development of areas I'm not measuring, I use existing image processing libraries to do some of the work. For Rust these libraries are referred to as “crates” and for JavaScript these are provided as npm libraries. Rust is both a newer language, and less popular than JavaScript, meaning that it has a smaller range of available libraries, so when it came to choosing a crate, I only really had one choice, the \texttt{image} crate. With JavaScript there is more choice, allowing me to choose the one that had the features I wanted, I settled on Jimp as it has a wide range of features and is very popular.
 
+% Be more specific about what the image processing libraries are doing
+
 % There's an opportunity to discuss other JS image processing solutions if I wanted to.
 % Might be useful to have statistics to back this up, but I don't want to add too many citations
 
@@ -215,7 +222,10 @@ Next is downsampling, this isn't required by the JPEG standard, but they offer t
 
 For the next part of the algorithm, each component is split into $8\times 8$ blocks. This exhibits the same problem as the previous step as at the edges a full $8\times 8$ block may not be possible. My implementation solves this by replacing the pixels with black, however other implementations may use an average of the existing pixels to ensure there is less influence on the image.
 
-The next step, the discrete cosine transform, is the most intensive step of the whole algorithm. The simplest way to implement this is to multiply each $8\times 8$ matrix by another $8\times 8$ matrix. For each entry in the resulting matrix there will be $8$ multiplications, leading to there being $8\times 64 = 512$ multiplications in total per block. The design of this transform results in high absolute values in the top left of the matrix, with low absolute values in the bottom right.
+The next step, the discrete cosine transform, is the most intensive step of the whole algorithm. The simplest way to implement this is to multiply each $8\times 8$ matrix by another $8\times 8$ matrix. For each entry in the resulting matrix there will be $8$ multiplications. In my implementation I use the naive implementation of Matrix multiplication, giving $8^3 = 512$ multiplications in total per block. There is an opportunity to improve the number of multiplications required here using Strassen's algorithm, which would use $8^{\log_2(7)}=343$ multiplications \cite{strassen1969gaussian}. However, it has been found that this algorithm is only better than the naive method for large matrices, and so on an $8\times 8$ matrix, the naive algorithm has better performance \cite{huang2016strassen}.
+
+
+% The design of this transform results in high absolute values in the top left of the matrix, with low absolute values in the bottom right.
 
 The next step is quantization, this is a lossy operation to keep only the lower frequency data and the human eye struggles to distinguish the strength of high frequency brightness variation. In order to apply quantization, for each element in the matrix, it is divided by the value in the same position of a quantization matrix and rounded. JPEG has a variety of quantization matrices, allowing for the user to specify their desired quality, with the matrices having lower values for higher qualities. Implementing the quantization matrix will lead to many of the elements being zero, allowing for easier encoding.
 
