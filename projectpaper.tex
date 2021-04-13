@@ -236,7 +236,22 @@ This encoding begins with run length encoding, intended for allowing for the enc
     \caption{Zig-zag order}
 \end{figure}
 
+This then forms a sequence of values, ideally with many zeros at the end. As the length is something that is already known, the encoding can stop when the rest of the sequence is just zeroes. The most common encoding to use for this is Huffman, however the specification does allow for using arithmetic coding.
+
+\subsubsection{Writing to the file}
+
+The remainder of the algorithm involves correctly writing the data to a file. For this I have used the source code for the JPEG encoders in the libraries discussed previously as this work isn't computationally intensive, but requires a lot of detail in order to ensure it is done correctly.
+
 \subsection{Testing}
+
+For JPEG, as the intensive section is the multiplication of matrices, there aren't properties of the image that lead to one taking longer than another. The exception to this is the overall size of the image as this determines the number of blocks that are created from the image. So for evaluation of the algorithms the size is the only factor to consider when choosing an image.
+
+The most basic evaluation is in determining the running time of the algorithm. The testing method uses the built in \texttt{console.time} method in JavaScript to time how long a function takes. This is measured just over the actual function that does the JPEG conversion, rather than the whole process, so get more accurate results about the algorithm itself.
+
+
+\subsection{Verification and Validation}
+
+\subsection{Stages of the life cycle undertaken}
 
 
 
