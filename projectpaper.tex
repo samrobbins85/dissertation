@@ -54,11 +54,12 @@ Traditionally image processing has been done in applications like Adobe Photosho
 
 In 1995 JavaScript was introduced as a method for introducing interactivity to web applications, since then there were some improvements made for programmers who wanted to perform computationally intensive tasks with their website, such as Web Workers, introduced in 2009 \cite{Hickson}. However, one of the biggest steps forward is the introduction of Web Assembly in 2017, allowing for assembly code to be executed by web browsers \cite{haas2017bringing}.
 
+Web Assembly is a compilation target for languages that support it, meaning that you take the code in the language of your choice and compile it into a \texttt{.wasm} file. This file can then be called using JavaScript to make it behave like a standard JavaScript library.
+
 Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript along with benefits such as type safety using static types, where JavaScript uses dynamic types. TypeScript works to try and solve this problem, but is just a transpiler to JavaScript, where Web Assembly allows for type checking at runtime.
 
 When it comes to producing a web application, the computation can be run on either the client (web browser) or the server, each coming with advantages and disadvantages. Running code on the server allows for the site to be performant on low power devices such as mobile phones, however by running code on the client you don't need to send data between the client and server on every interaction. This allows the site to continue being ran during times of intermittent connection and reduces the latency of operations. Running code on the client also allows for the site to be turned into a progressive web app, which only need to be connected to the internet once for installation similarly to an app \cite{biorn2017progressive}.
 
-\subsection{How web assembly works}
 
 
 
