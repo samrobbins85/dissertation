@@ -246,12 +246,17 @@ The remainder of the algorithm involves correctly writing the data to a file. Fo
 
 For JPEG, as the intensive section is the multiplication of matrices, there aren't properties of the image that lead to one taking longer than another. The exception to this is the overall size of the image as this determines the number of blocks that are created from the image. So for evaluation of the algorithms the size is the only factor to consider when choosing an image.
 
-The most basic evaluation is in determining the running time of the algorithm. The testing method uses the built in \texttt{console.time} method in JavaScript to time how long a function takes. This is measured just over the actual function that does the JPEG conversion, rather than the whole process, so get more accurate results about the algorithm itself.
+The first evaluation is to determine the running time of the algorithm. The testing method uses the built-in \texttt{console.time} method in JavaScript to time how long a function takes. This is measured just over the actual function that does the JPEG conversion, rather than the whole process, so get more accurate results about the algorithm itself.
 
+Memory usage is also an important metric, especially on mobile devices that might have small amounts of memory. This can be measured using the \texttt{/usr/bin/time} command on Linux devices, which measures both the time taken and memory usage of a command. This metric is less accurate than the timing evaluation already discussed as it measures the memory usage of the whole command, rather than just of the JPEG conversion. To try and counteract this difference, I have kept the code outside the JPEG conversion as similar as possible to ensure it has the same memory consumption.
 
 \subsection{Verification and Validation}
 
+To verify these results, I compared them against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either web assembly or JavaScript I expect this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
+
 \subsection{Stages of the life cycle undertaken}
+
+Do I need to do this?
 
 
 
