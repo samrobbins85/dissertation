@@ -241,7 +241,8 @@ This then forms a sequence of values, ideally with many zeros at the end. As the
 
 \subsubsection{Writing to the file}
 
-The remainder of the algorithm involves correctly writing the data to a file. For this I have used the source code for the JPEG encoders in the libraries discussed previously as this work isn't computationally intensive, but requires a lot of detail in order to ensure it is done correctly.
+The remainder of the algorithm involves correctly writing the data to a file. For this the source code for the JPEG encoders in the libraries discussed previously used, as this work isn't computationally intensive, but requires a lot of detail in order to ensure it is done correctly.
+
 
 \subsection{Testing}
 
@@ -249,11 +250,11 @@ For JPEG, as the intensive section is the multiplication of matrices, there aren
 
 The first evaluation is to determine the running time of the algorithm. The testing method uses the built-in \texttt{console.time} method in JavaScript to time how long a function takes. This is measured just over the actual function that does the JPEG conversion, rather than the whole process, so get more accurate results about the algorithm itself.
 
-Memory usage is also an important metric, especially on mobile devices that might have small amounts of memory. This can be measured using the \texttt{/usr/bin/time} command on Linux devices, which measures both the time taken and memory usage of a command. This metric is less accurate than the timing evaluation already discussed as it measures the memory usage of the whole command, rather than just of the JPEG conversion. To try and counteract this difference, I have kept the code outside the JPEG conversion as similar as possible to ensure it has the same memory consumption.
+Memory usage is also an important metric, especially on mobile devices that might have small amounts of memory. This can be measured using the \texttt{/usr/bin/time} command on Linux devices, which measures both the time taken and memory usage of a command. This metric is less accurate than the timing evaluation already discussed as it measures the memory usage of the whole command, rather than just of the JPEG conversion. To try and counteract this difference, the code outside the JPEG conversion is kept as similar as possible to ensure it has the same memory consumption.
 
 \subsection{Verification and Validation}
 
-To verify these results, I compared them against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either web assembly or JavaScript I expect this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
+To verify these results, they are compared against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either web assembly or JavaScript it is expected for this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
 
 \subsection{Stages of the life cycle undertaken}
 
@@ -263,84 +264,84 @@ Do I need to do this?
 \newpage
 \section{Results}
 
-The first test was on image \textbf{deer}, this is a 24MP, 11 megabyte, png format photo of a deer. The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
+The first test was on image \textbf{deer}, this is a 24MP, 11 Megabyte, PNG format photo of a deer. The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
 
 
 \begin{figure}[H]
-\centering
-\begin{tikzpicture}
-	\begin{axis}[
-		symbolic x coords={JavaScript, Web Assembly},
-		xtick=data,
-		bar width = 40,
-		enlarge x limits = 0.5,
-		ybar,
-		ylabel = Time(Seconds),
-		ymin=0,
-		nodes near coords,
-		     axis x line*=bottom,
-		     axis y line*=left,		]
-		\addplot coordinates {
-			(JavaScript,   2.48)
-			(Web Assembly,  1.60)
-		};
-	\end{axis}
-\end{tikzpicture}
-\caption{JPEG Encoder Step}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                symbolic x coords={JavaScript, Web Assembly},
+                xtick=data,
+                bar width = 40,
+                enlarge x limits = 0.5,
+                ybar,
+                ylabel = Time(Seconds),
+                ymin=0,
+                nodes near coords,
+                axis x line*=bottom,
+                axis y line*=left,		]
+            \addplot coordinates {
+                    (JavaScript,   2.48)
+                    (Web Assembly,  1.60)
+                };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{JPEG Encoder Step}
 \end{figure}
 
 I then measured the time for the overall algorithm, including imagemagick, a command line image conversion tool.
 
 \begin{figure}[H]
-	\centering
-	\begin{tikzpicture}
-		\begin{axis}[
-			symbolic x coords={JavaScript, Web Assembly, imagemagick},
-			xtick=data,
-			bar width = 20,
-			enlarge x limits = 0.2,
-			ybar,
-			ylabel = Time(Seconds),
-			ymin=0,
-			nodes near coords,
-			axis x line*=bottom,
-			axis y line*=left,
-			width=300,
-			height=200		]
-			\addplot coordinates {
-				(JavaScript,  3.17)
-				(Web Assembly,  2.79)
-				(imagemagick,  0.37)
-			};
-		\end{axis}
-	\end{tikzpicture}
-	\caption{Full process}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                symbolic x coords={JavaScript, Web Assembly, imagemagick},
+                xtick=data,
+                bar width = 20,
+                enlarge x limits = 0.2,
+                ybar,
+                ylabel = Time(Seconds),
+                ymin=0,
+                nodes near coords,
+                axis x line*=bottom,
+                axis y line*=left,
+                width=300,
+                height=200		]
+            \addplot coordinates {
+                    (JavaScript,  3.17)
+                    (Web Assembly,  2.79)
+                    (imagemagick,  0.37)
+                };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Full process}
 \end{figure}
 
 \begin{figure}[H]
-	\centering
-	\begin{tikzpicture}
-		\begin{axis}[
-			symbolic x coords={JavaScript, Web Assembly, imagemagick},
-			xtick=data,
-			bar width = 20,
-			enlarge x limits = 0.2,
-			ybar,
-			ylabel = Memory (Megabytes),
-			ymin=0,
-			nodes near coords,
-			axis x line*=bottom,
-			axis y line*=left,
-			width=300,
-			height=200		]
-			\addplot coordinates {
-				(JavaScript,  61.4)
-				(Web Assembly,  28.8)
-				(imagemagick,  10.6)
-			};
-		\end{axis}
-	\end{tikzpicture}
-	\caption{Memory consumption of process}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                symbolic x coords={JavaScript, Web Assembly, imagemagick},
+                xtick=data,
+                bar width = 20,
+                enlarge x limits = 0.2,
+                ybar,
+                ylabel = Memory (Megabytes),
+                ymin=0,
+                nodes near coords,
+                axis x line*=bottom,
+                axis y line*=left,
+                width=300,
+                height=200		]
+            \addplot coordinates {
+                    (JavaScript,  61.4)
+                    (Web Assembly,  28.8)
+                    (imagemagick,  10.6)
+                };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Memory consumption of process}
 \end{figure}
 
 
