@@ -4,9 +4,10 @@
 \usepackage{harvard}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
 \citationmode{abbr}
 \bibliographystyle{agsm}
-\usepackage[dvipsnames]{xcolor}
 \title{Image Processing using JavaScript and Web Assembly}
 \author{} % leave; your name goes into \student{}
 \student{Sam Robbins}
@@ -259,16 +260,92 @@ To verify these results, I compared them against a basic conversion using imagem
 Do I need to do this?
 
 
-
-
-
-
 \newpage
 \section{Results}
 
-this section presents the results of the solutions.  It should include information on experimental settings.  The results should demonstrate the claimed benefits/disadvantages of the proposed solutions.
+The first test was on image \textbf{deer}, this is a 24MP, 11 megabyte, png format photo of a deer. The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
 
-This section should be between 2 to 3 pages in length.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		symbolic x coords={JavaScript, Web Assembly},
+		xtick=data,
+		bar width = 40,
+		enlarge x limits = 0.5,
+		ybar,
+		ylabel = Time(Seconds),
+		ymin=0,
+		nodes near coords,
+		     axis x line*=bottom,
+		     axis y line*=left,		]
+		\addplot coordinates {
+			(JavaScript,   2.48)
+			(Web Assembly,  1.60)
+		};
+	\end{axis}
+\end{tikzpicture}
+\caption{JPEG Encoder Step}
+\end{figure}
+
+I then measured the time for the overall algorithm, including imagemagick, a command line image conversion tool.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			symbolic x coords={JavaScript, Web Assembly, imagemagick},
+			xtick=data,
+			bar width = 20,
+			enlarge x limits = 0.2,
+			ybar,
+			ylabel = Time(Seconds),
+			ymin=0,
+			nodes near coords,
+			axis x line*=bottom,
+			axis y line*=left,
+			width=300,
+			height=200		]
+			\addplot coordinates {
+				(JavaScript,  3.17)
+				(Web Assembly,  2.79)
+				(imagemagick,  0.37)
+			};
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Full process}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			symbolic x coords={JavaScript, Web Assembly, imagemagick},
+			xtick=data,
+			bar width = 20,
+			enlarge x limits = 0.2,
+			ybar,
+			ylabel = Memory (Megabytes),
+			ymin=0,
+			nodes near coords,
+			axis x line*=bottom,
+			axis y line*=left,
+			width=300,
+			height=200		]
+			\addplot coordinates {
+				(JavaScript,  61.4)
+				(Web Assembly,  28.8)
+				(imagemagick,  10.6)
+			};
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Memory consumption of process}
+\end{figure}
+
+
+
+
 \newpage
 \section{Evaluation}
 
