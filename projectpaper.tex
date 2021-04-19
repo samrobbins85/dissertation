@@ -195,11 +195,11 @@ As one can see from these results, the compression ratio is very comparable betw
 
 Web Assembly can run in a wide variety of places, there are the different browsers, Chrome, Firefox and Safari, along with different platforms, web and mobile. Each of these will implement their processing of both JavaScript and Web Assembly differently, which makes choosing the platform an important topic. With Chrome having over 64\% market share, it is a good choice as the results are most widely applicable \cite{webmarketshare}.
 
-While the browser itself is important, the JavaScript engine is what will impact the results. This is the computer program responsible for executing JavaScript and Web Assembly code. The JavaScript engine inside Google Chrome is called V8, and is open source, allowing for other projects to use it. One such project is Node.js which allows you to run JavaScript from the command line. This has become incredibly popular for the construction of web backends, with over 78,000 stars on GitHub. The benefit of using this over a browser is that the metrics will be transferable to browsers, but allows me to reduce the number of external factors that impact the computation. Examples of this is that a browser will manage the resources available to each of its tabs, meaning that having more tabs open could affect the result, whereas the resources of Node.js are managed by the operating system. This also makes it easier to collect metrics such as memory usage and timing and the process runs as a system process.
+While the browser itself is important, the JavaScript engine is what will impact the results. This is the computer program responsible for executing JavaScript and Web Assembly code. The JavaScript engine inside Google Chrome is called V8, and is open source, allowing for other projects to use it. One such project is Node.js which allows for running JavaScript from the command line. This has become incredibly popular for the construction of web backends, with over 78,000 stars on GitHub. The benefit of using this over a browser is that the metrics will still be transferable to browsers, and allows me to reduce the number of external factors that impact the computation. An example of this is that a browser will manage the resources available to each of its tabs, meaning that having more tabs open could affect the result, whereas the resources of Node.js are managed by the operating system. This also makes it easier to collect metrics such as memory usage and timing and the process runs as a system process.
 
 \subsection{Use of existing libraries}
 
-In order to speed up the development of areas I'm not measuring, I use existing image processing libraries to do some of the work. For example in decoding a provided image into the simple r,g,b values so that I can then run an encoder on them.
+In order to speed up the development of areas whose performance I'm not measuring, I use existing image processing libraries to do some of the work. For example in decoding a provided image into the simple r,g,b values so that I can then run an encoder on them.
 
 For Rust these libraries are referred to as “crates” and for JavaScript these are provided as npm libraries. Rust is both a newer language, and less popular than JavaScript, meaning that it has a smaller range of available libraries, so when it came to choosing a crate, I only really had one choice, the \texttt{image} crate.
 
@@ -212,13 +212,13 @@ With JavaScript there is more choice, allowing me to choose the one that had the
 
 \subsection{Choice of algorithms}
 
-There are a wide range of algorithms to choose from when it comes to image processing. The main factor to consider when choosing an algorithm for this project is how complex it is. This is because I want the algorithm itself to take enough time that the other processing involved such as copying from memory takes a comparatively negligible amount of time, improving the accuracy of the results captured. In practice this means discounting algorithms that look at each pixel and perform a defined action on it, such as brightness. When editing photos, the operation that tends to take the most time is exporting the images to JPEG, so I decided to explore implementing the JPEG algorithm \cite{jpeg}.
+There is a wide range of algorithms to choose from when it comes to image processing. The main factor to consider when choosing an algorithm for this project is how complex it is. This is because I want the algorithm itself to take enough time that the other processing involved such as copying from memory takes a comparatively negligible amount of time, improving the accuracy of the results captured. In practice this means discounting algorithms that look at each pixel and perform a defined action on it, such as brightness. When editing photos, the operation that tends to take the most time is exporting the images to JPEG, so I decided to explore implementing the JPEG algorithm \cite{jpeg}.
 
 \subsection{Implementation of JPEG}
 
 For both implementations, I started with prewritten code to decode an image into a long string of r,g,b,a values and the width and height of the image. The first step is the transformation of the image from the r,g,b colour space into the YCbCr colour space. Doing this is the simple task of calculating fractions based on the r,g and b values, so is not especially intensive.
 
-Next is downsampling, this isn't required by the JPEG standard, but they offer the ability to use it. This reduces the resolution of the Cb and Cr components. It is done on these components as brightness (Y) is much more noticeable to the human eye compared to the other components, meaning the resolution can be reduced without a noticeable decrease in quality. To do this, each $2\times 2$ pixel area is averaged to a single pixel. On the borders where it isn't possible to get this area, the average is just calculated based on the available pixels.
+Next is downsampling; this isn't required by the JPEG standard, but can be used to further reduce image size. This reduces the resolution of the Cb and Cr components. It is done on these components as brightness (Y) is much more noticeable to the human eye compared to the other components, meaning the resolution can be reduced without a noticeable decrease in quality. To do this, each $2\times 2$ pixel area is averaged to a single pixel. On the borders where it isn't possible to get this area, the average is just calculated based on the available pixels.
 
 For the next part of the algorithm, each component is split into $8\times 8$ blocks. This exhibits the same problem as the previous step as at the edges a full $8\times 8$ block may not be possible. My implementation solves this by replacing the pixels with black, however other implementations may use an average of the existing pixels to ensure there is less influence on the image.
 
@@ -227,7 +227,7 @@ The next step, the discrete cosine transform, is the most intensive step of the 
 
 % The design of this transform results in high absolute values in the top left of the matrix, with low absolute values in the bottom right.
 
-The next step is quantization, this is a lossy operation to keep only the lower frequency data and the human eye struggles to distinguish the strength of high frequency brightness variation. In order to apply quantization, for each element in the matrix, it is divided by the value in the same position of a quantization matrix and rounded. JPEG has a variety of quantization matrices, allowing for the user to specify their desired quality, with the matrices having lower values for higher qualities. Implementing the quantization matrix will lead to many of the elements being zero, allowing for easier encoding.
+The next step is quantization, this is a lossy operation to keep only the lower frequency data as the human eye struggles to distinguish the strength of high frequency brightness variation. In order to apply quantization, for each element in the matrix, it is divided by the value in the same position of a quantization matrix and rounded. JPEG has a variety of quantization matrices, allowing for the user to specify their desired quality, with the matrices having lower values for higher qualities. Implementing the quantization matrix will lead to many of the elements being zero, allowing for easier encoding.
 
 This encoding begins with run length encoding, intended for allowing for the encoding of runs of zeroes. This algorithm uses "zig-zag encoding" in which the order in which the elements are processed is defined by a zig-zag pattern, shown in the image below, taken from \cite{jpeg}.
 
@@ -251,6 +251,11 @@ For JPEG, as the intensive section is the multiplication of matrices, there aren
 The first evaluation is to determine the running time of the algorithm. The testing method uses the built-in \texttt{console.time} method in JavaScript to time how long a function takes. This is measured just over the actual function that does the JPEG conversion, rather than the whole process, so get more accurate results about the algorithm itself.
 
 Memory usage is also an important metric, especially on mobile devices that might have small amounts of memory. This can be measured using the \texttt{/usr/bin/time} command on Linux devices, which measures both the time taken and memory usage of a command. This metric is less accurate than the timing evaluation already discussed as it measures the memory usage of the whole command, rather than just of the JPEG conversion. To try and counteract this difference, the code outside the JPEG conversion is kept as similar as possible to ensure it has the same memory consumption.
+
+In order to verify the accuracy of my Rust implementations, I used the \texttt{web\_sys} crate which allows me to run \texttt{console.time} inside my rust code and observed a discrepancy of under 100ms between the internal and external time, which is small enough given the times involved to not be an issue.
+
+A full profiler hasn't been used here as there aren't widely used JavaScript profilers that evaluate at the level of how long each function takes. Instead, they focus on things such as response time and CPU utilization of the overall program, which doesn't deliver the results I'd look for.
+
 
 \subsection{Verification and Validation}
 
@@ -350,7 +355,11 @@ I then measured the time for the overall algorithm, including imagemagick, a com
 \newpage
 \section{Evaluation}
 
-This section should between 1 to 2 pages in length.
+This solution demonstrates the improvements that Web Assembly can offer over JavaScript, both when it comes to execution time and memory usage. While the results show that both of these solutions perform worse than native code, they have much more flexibility and so are still beneficial. These results are in line with the results found in the related work section of this paper, showing that the conclusions reached extend to image processing.
+
+However the ease of programming in JavaScript is much better than in Rust due to many factors. One of these is that JavaScript has dynamic types, making it faster to code without having to think about what type a variable should be. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
+
+
 \newpage
 \section{Conclusions}
 
