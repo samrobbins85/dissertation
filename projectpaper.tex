@@ -263,7 +263,7 @@ To verify these results, they are compared against a basic conversion using imag
 
 \subsection{Stages of the life cycle undertaken}
 
-Do I need to do this?
+The development of this project was done using the Waterfall methodology \cite{royce1987managing}. First the system and software requirements were formed of what I want the application to do. Then doing requirements analysis to determine the sections needed to complete the work. The software architecture is then planned out during the design stage, determining what the system should look like. Then comes the actual coding, producing the system I need. Afterwards I test the system, ensuring the results are what I expect.
 
 
 \newpage
@@ -285,69 +285,84 @@ The first test was on image \textbf{deer}, this is a 24MP, 11 Megabyte, PNG form
                 ymin=0,
                 nodes near coords,
                 axis x line*=bottom,
-                axis y line*=left,		]
+                axis y line*=left,
+                legend style={at={(0.5,-0.15)},
+                        anchor=north,legend columns=-1}		]
             \addplot coordinates {
                     (JavaScript,   2.48)
                     (Web Assembly,  1.60)
                 };
-        \end{axis}
-    \end{tikzpicture}
-    \caption{JPEG Encoder Step}
-\end{figure}
-
-I then measured the time for the overall algorithm, including imagemagick, a command line image conversion tool.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-                symbolic x coords={JavaScript, Web Assembly, imagemagick},
-                xtick=data,
-                bar width = 20,
-                enlarge x limits = 0.2,
-                ybar,
-                ylabel = Time(Seconds),
-                ymin=0,
-                nodes near coords,
-                axis x line*=bottom,
-                axis y line*=left,
-                width=300,
-                height=200		]
             \addplot coordinates {
-                    (JavaScript,  3.17)
-                    (Web Assembly,  2.79)
-                    (imagemagick,  0.37)
+                    (JavaScript,   12)
+                    (Web Assembly,  2.97)
                 };
+            \legend{JPEG Encoding,Gaussian Blur}
         \end{axis}
     \end{tikzpicture}
-    \caption{Full process}
+    \caption{Algorithm timings}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-                symbolic x coords={JavaScript, Web Assembly, imagemagick},
-                xtick=data,
-                bar width = 20,
-                enlarge x limits = 0.2,
-                ybar,
-                ylabel = Memory (Megabytes),
-                ymin=0,
-                nodes near coords,
-                axis x line*=bottom,
-                axis y line*=left,
-                width=300,
-                height=200		]
-            \addplot coordinates {
-                    (JavaScript,  61.4)
-                    (Web Assembly,  28.8)
-                    (imagemagick,  10.6)
-                };
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Memory consumption of process}
-\end{figure}
+I then measured the time and memory consumption for the overall algorithm, including imagemagick, a command line image conversion tool.
+
+
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={JavaScript, Web Assembly, imagemagick},
+                    xtick=data,
+                    x tick label style={rotate=45, anchor=north east, inner sep=0mm},
+                    bar width = 20,
+                    enlarge x limits = 0.2,
+                    ybar,
+                    ylabel = Time(Seconds),
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=200,
+                    height=200		]
+                \addplot coordinates {
+                        (JavaScript,  3.17)
+                        (Web Assembly,  2.79)
+                        (imagemagick,  0.37)
+                    };
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Full process}
+    \end{figure}\end{minipage}
+\begin{minipage}[t]{0.05\textwidth}
+\end{minipage}
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={JavaScript, Web Assembly, imagemagick},
+                    x tick label style={rotate=45, anchor=north east, inner sep=0mm},
+                    xtick=data,
+                    bar width = 20,
+                    enlarge x limits = 0.2,
+                    ybar,
+                    ylabel = Memory (Megabytes),
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=200,
+                    height=200		]
+                \addplot coordinates {
+                        (JavaScript,  61.4)
+                        (Web Assembly,  28.8)
+                        (imagemagick,  10.6)
+                    };
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Memory consumption of process}
+    \end{figure}\end{minipage}
+
+
 
 
 
