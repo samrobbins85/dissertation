@@ -229,12 +229,12 @@ The next step, the discrete cosine transform, is the most intensive step of the 
 
 The next step is quantization, this is a lossy operation to keep only the lower frequency data as the human eye struggles to distinguish the strength of high frequency brightness variation. In order to apply quantization, for each element in the matrix, it is divided by the value in the same position of a quantization matrix and rounded. JPEG has a variety of quantization matrices, allowing for the user to specify their desired quality, with the matrices having lower values for higher qualities. Implementing the quantization matrix will lead to many of the elements being zero, allowing for easier encoding.
 
-This encoding begins with run length encoding, intended for allowing for the encoding of runs of zeroes. This algorithm uses "zig-zag encoding" in which the order in which the elements are processed is defined by a zig-zag pattern, shown in the image below, taken from \cite{jpeg}.
+This encoding begins with run length encoding, intended for allowing for the encoding of runs of zeroes. This algorithm uses “zigzag encoding” in which the order in which the elements are processed is defined by a zigzag pattern, shown in the image below, taken from \cite{jpeg}.
 
 \begin{figure}[H]
     \centering
     \includegraphics{zigzag.png}
-    \caption{Zig-zag order}
+    \caption{Zigzag order}
 \end{figure}
 
 This then forms a sequence of values, ideally with many zeros at the end. As the length is something that is already known, the encoding can stop when the rest of the sequence is just zeroes. The most common encoding to use for this is Huffman, however the specification does allow for using arithmetic coding.
@@ -242,6 +242,10 @@ This then forms a sequence of values, ideally with many zeros at the end. As the
 \subsubsection{Writing to the file}
 
 The remainder of the algorithm involves correctly writing the data to a file. For this the source code for the JPEG encoders in the libraries discussed previously used, as this work isn't computationally intensive, but requires a lot of detail in order to ensure it is done correctly.
+
+\subsection{Gaussian Blur}
+
+For the Gaussian Blur implementation, I have used the built in implementations available in jimp and the image crate. These behave in a very similar way and so are suitable for comparison, and the same values are used for both implementation.
 
 
 \subsection{Testing}
@@ -271,36 +275,72 @@ The development of this project was done using the Waterfall methodology \cite{r
 
 The first test was on image \textbf{deer}, this is a 24MP, 11 Megabyte, PNG format photo of a deer. The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
 
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-                symbolic x coords={JavaScript, Web Assembly},
-                xtick=data,
-                bar width = 40,
-                enlarge x limits = 0.5,
-                ybar,
-                ylabel = Time(Seconds),
-                ymin=0,
-                nodes near coords,
-                axis x line*=bottom,
-                axis y line*=left,
-                legend style={at={(0.5,-0.15)},
-                        anchor=north,legend columns=-1}		]
-            \addplot coordinates {
-                    (JavaScript,   2.48)
-                    (Web Assembly,  1.60)
-                };
-            \addplot coordinates {
-                    (JavaScript,   12)
-                    (Web Assembly,  2.97)
-                };
-            \legend{JPEG Encoding,Gaussian Blur}
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Algorithm timings}
-\end{figure}
+\begin{minipage}[t]{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={JavaScript, Web Assembly},
+                    xtick=data,
+                    bar width = 20,
+                    enlarge x limits = 0.5,
+                    ybar,
+                    ylabel = Time(Seconds),
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=200,
+                    legend style={at={(0.5,-0.15)},
+                            anchor=north,legend columns=-1}		]
+                \addplot coordinates {
+                        (JavaScript,   2.48)
+                        (Web Assembly,  1.60)
+                    };
+                \addplot coordinates {
+                        (JavaScript,   12)
+                        (Web Assembly,  2.97)
+                    };
+                \legend{JPEG Encoding,Gaussian Blur}
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Algorithm timings}
+    \end{figure}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={JavaScript, Web Assembly},
+                    xtick=data,
+                    bar width = 20,
+                    enlarge x limits = 0.5,
+                    ybar,
+                    ylabel = Time(Milliseconds),
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=200,
+                    legend style={at={(0.5,-0.15)},
+                            anchor=north,legend columns=-1}		]
+                \addplot coordinates {
+                        (JavaScript,   102)
+                        (Web Assembly,  269)
+                    };
+                \addplot coordinates {
+                        (JavaScript,   103)
+                        (Web Assembly,  271)
+                    };
+                \legend{Brightness, Contrast}
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Lightweight algorithm timing}
+    \end{figure}
+\end{minipage}
+\\
+\\
 
 I then measured the time and memory consumption for the overall algorithm, including imagemagick, a command line image conversion tool.
 
