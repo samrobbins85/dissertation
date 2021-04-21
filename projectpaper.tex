@@ -41,7 +41,6 @@
     Put a few keywords here.
 \end{keywords}
 
-\newpage
 
 \section{Introduction}
 
@@ -77,7 +76,6 @@ The Research question is to find in which cases Web Assembly offers a benefit ov
 
 
 
-\newpage
 
 
 \section{Related Work}
@@ -117,6 +115,8 @@ Squoosh by Google Chrome is a tool to compress images and implements many of its
 \subsection{Performance of Web Assembly}
 
 Alongside image processing, Web Assembly is also used for a range of other purposes. Figma is a tool for designers, and implemented Web Assembly to improve their load times 3$\times$ compared to their previous solution which translated assembly to JavaScript \cite{figmawasm}.
+
+Another implementation of Web Assembly is in determining the quality of DNA sequencing data, as used by fastq.bio \cite{fastq}. In this implementation they achieved a $9\times $ performance improvement, managing to increase that to $21 \times$ with some additional optimizations such as using a single function call.
 
 
 However, when running code natively, Web Assembly may not be the best solution. A JavaScript bundler is a program which creates large files from the smaller JavaScript files needed for a web application, this is useful as better performance can be achieved by sending a few large files compared to lots of smaller files. The author of a native JavaScript bundler observed that there was a 10$\times$ speed improvement by running it natively, compared to using web assembly \cite{esbuild}.
@@ -187,7 +187,6 @@ There are a range of image formats in use, and the encoding and decoding of imag
 
 As one can see from these results, the compression ratio is very comparable between the various implementations of JPEG and PNG, however the compression speed greatly differs, with some JPEG algorithms significantly outperforming PNG.
 
-\newpage
 
 \section{Solution}
 
@@ -414,9 +413,21 @@ For the JPEG encoding I measured the time and memory consumption for the overall
 \newpage
 \section{Evaluation}
 
-This solution demonstrates the improvements that Web Assembly can offer over JavaScript, both when it comes to execution time and memory usage. While the results show that both of these solutions perform worse than native code, they have much more flexibility and so are still beneficial. These results are in line with the results found in the related work section of this paper, showing that the conclusions reached extend to image processing.
+\subsection{Solution Strengths}
 
-However the ease of programming in JavaScript is much better than in Rust due to many factors. One of these is that JavaScript has dynamic types, making it faster to code without having to think about what type a variable should be. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
+The web assembly solution offers significant improvement over JavaScript for complex algorithms, being $4.04 \times$ faster at performing the Gaussian blur task and $1.55 \times$ faster at performing JPEG encoding. For the Gaussian blur, with a processing time of 12 seconds for JavaScript, this takes it above the 10-second limit for keeping the user's attention, as discussed in \cite{nielsen1994usability}, giving web assembly a big advantage in making the application feel responsive. These improvements are roughly in line with the results found by fastq.bio in their implementation \cite{fastq}.
+
+The web assembly implementation also has much lower memory consumption, which is important for low power devices such as mobile phones with low memory capacity. This is likely due to the increased control the language has for memory management, allowing the programmer to specify how much memory they want and when they don't want it anymore. In contrast, JavaScript handles all the memory management itself, making assumptions about when memory can be freed.
+
+Rust has a big advantage in developer experience for having static types, meaning that the language server is capable of telling the developer what parameters a function takes, and what their types are. This is very useful for debugging as it may be the case that an incorrect type of variable has been passed to a function, in JavaScript this could either lead to unexpected behaviour, or cause an error further down the chain, whereas in Rust, this problem will be immediately highlighted to the user in their IDE. This also makes it easier to remember what functions do without looking at documentation as you can see what parameters they need and what type of data you will get out from it. JavaScript does offer the ability for static types through TypeScript, a superset of the language that includes types, however due to this being an addition to the language, not all packages provide it, so the benefit isn't as large as with Rust.
+
+\subsection{Solution Limitations}
+
+Both the JavaScript and Web Assembly options had significantly worse performance in comparison to the native code of imagemagick, with web assembly being $7.5 \times$ slower, which is in line with the results found in the related work section of this paper. There is still significant overhead to running code in websites, and the benefit of the flexibility has to outweigh it.
+
+In addition, while results show that for complex algorithms, web assembly does offer a significant benefit over JavaScript, for simple algorithms, JavaScript performs better. This is likely due to the additional complexity involved in getting web assembly code running in browsers, compared to JavaScript which they have been built to run for many years.
+
+While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
 
 
 \newpage
