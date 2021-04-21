@@ -247,6 +247,10 @@ The remainder of the algorithm involves correctly writing the data to a file. Fo
 
 For the Gaussian Blur implementation, I have used the built in implementations available in jimp and the image crate. These behave in a very similar way and so are suitable for comparison, and the same values are used for both implementation.
 
+\subsection{Brightness and Contrast}
+
+Brightness and contrast are two operations that just perform a defined action on each pixel, this means that the implementations in the different libraries will be doing exactly the same thing.
+
 
 \subsection{Testing}
 
@@ -273,7 +277,7 @@ The development of this project was done using the Waterfall methodology \cite{r
 \newpage
 \section{Results}
 
-The first test was on image \textbf{deer}, this is a 24MP, 11 Megabyte, PNG format photo of a deer. The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
+Testing was done on a 24MP, 11 Megabyte, PNG format photo of a deer. The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
 
 \begin{minipage}[t]{0.5\textwidth}
     \begin{figure}[H]
@@ -342,7 +346,7 @@ The first test was on image \textbf{deer}, this is a 24MP, 11 Megabyte, PNG form
 \\
 \\
 
-I then measured the time and memory consumption for the overall algorithm, including imagemagick, a command line image conversion tool.
+For the JPEG encoding I measured the time and memory consumption for the overall algorithm, including imagemagick, a command line conversion tool. This measurement was only applicable for JPEG encoding as in every process imagemagick will do image encoding to produce an output, so the measurement wouldn't just be measuring the algorithm in question.
 
 
 \begin{minipage}[t]{0.45\textwidth}
