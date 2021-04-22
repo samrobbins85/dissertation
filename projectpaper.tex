@@ -38,7 +38,7 @@
 \end{abstract}
 
 \begin{keywords}
-    Put a few keywords here.
+    web assembly, javascript, image processing
 \end{keywords}
 
 
@@ -436,10 +436,10 @@ While I did discuss the benefits of static types in the strengths section, this 
 \newpage
 \section{Conclusions}
 
-This section summarises the main points of this paper.  Do not replicate the abstract as the conclusion.  A conclusion might elaborate on the importance of the work or suggest applications and extensions.  This section should be no more than 1 page in length.
+One new development that could help with image processing on the web is WebGPU \cite{webgpu}. This is a standard that allows for access of the GPU by both JavaScript and Web Assembly. Due to the nature of image processing algorithms in performing parallel operations, such as in JPEG where much of the computation is done on the $8\times 8$ blocks, each of these can be parallelized. As GPUs are designed for such operations, often having many more cores than a CPU, this could lead to a large improvement in performance.
 
-The page lengths given for each section are indicative and will vary from project to project but should not exceed the upper limit.  A summary is shown in Table \ref{summary}.
 
+\newpage
 \begin{table}[htb]
     \centering
     \caption{SUMMARY OF PAGE LENGTHS FOR SECTIONS}
