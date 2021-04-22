@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{pgfplots}
+\usepackage{pgf-pie}
 \citationmode{abbr}
 \bibliographystyle{agsm}
 \title{Image Processing using JavaScript and Web Assembly}
@@ -38,7 +39,7 @@
 \end{abstract}
 
 \begin{keywords}
-    web assembly, javascript, image processing
+    Web Assembly, JavaScript, Image Processing
 \end{keywords}
 
 
@@ -192,8 +193,17 @@ As one can see from these results, the compression ratio is very comparable betw
 
 \subsection{Platform}
 
-Web Assembly can run in a wide variety of places, there are the different browsers, Chrome, Firefox and Safari, along with different platforms, web and mobile. Each of these will implement their processing of both JavaScript and Web Assembly differently, which makes choosing the platform an important topic. With Chrome having over 64\% market share, it is a good choice as the results are most widely applicable \cite{webmarketshare}.
+Web Assembly can run in a wide variety of places, there are the different browsers, Chrome, Firefox and Safari, along with different platforms, web and mobile. Each of these will implement their processing of both JavaScript and Web Assembly differently, which makes choosing the platform an important topic. Google Chrome has a majority market share, making it a good choice as the results are most widely applicable \cite{webmarketshare}.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \pie
+        {64/Google Chrome,
+            19/Safari, 4/Firefox, 13/Others}
+    \end{tikzpicture}
+    \caption{Browser Market Share}
 
+\end{figure}
 While the browser itself is important, the JavaScript engine is what will impact the results. This is the computer program responsible for executing JavaScript and Web Assembly code. The JavaScript engine inside Google Chrome is called V8, and is open source, allowing for other projects to use it. One such project is Node.js which allows for running JavaScript from the command line. This has become incredibly popular for the construction of web backends, with over 78,000 stars on GitHub. The benefit of using this over a browser is that the metrics will still be transferable to browsers, and allows me to reduce the number of external factors that impact the computation. An example of this is that a browser will manage the resources available to each of its tabs, meaning that having more tabs open could affect the result, whereas the resources of Node.js are managed by the operating system. This also makes it easier to collect metrics such as memory usage and timing and the process runs as a system process.
 
 \subsection{Use of existing libraries}
@@ -276,7 +286,6 @@ To verify these results, they are compared against a basic conversion using imag
 The development of this project was done using the Waterfall methodology \cite{royce1987managing}. First the system and software requirements were formed of what I want the application to do. Then doing requirements analysis to determine the sections needed to complete the work. The software architecture is then planned out during the design stage, determining what the system should look like. Then comes the actual coding, producing the system I need. Afterwards I test the system, ensuring the results are what I expect.
 
 
-\newpage
 \section{Results}
 
 Testing was done on a 24MP, 11 Megabyte, PNG format photo of a deer. The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
@@ -413,7 +422,6 @@ For the JPEG encoding I measured the time and memory consumption for the overall
 
 
 
-\newpage
 \section{Evaluation}
 
 \subsection{Solution Strengths}
@@ -439,22 +447,6 @@ While I did discuss the benefits of static types in the strengths section, this 
 One new development that could help with image processing on the web is WebGPU \cite{webgpu}. This is a standard that allows for access of the GPU by both JavaScript and Web Assembly. Due to the nature of image processing algorithms in performing parallel operations, such as in JPEG where much of the computation is done on the $8\times 8$ blocks, each of these can be parallelized. As GPUs are designed for such operations, often having many more cores than a CPU, this could lead to a large improvement in performance.
 
 
-\newpage
-\begin{table}[htb]
-    \centering
-    \caption{SUMMARY OF PAGE LENGTHS FOR SECTIONS}
-    \vspace*{6pt}
-    \label{summary}
-    \begin{tabular}{|ll|c|} \hline
-             & \multicolumn{1}{c|}{\bf Section} & {\bf Number of Pages} \\ \hline
-        I.   & Introduction                     & 2--3                  \\ \hline
-        II.  & Related Work                     & 2--3                  \\ \hline
-        III. & Solution                         & 4--7                  \\ \hline
-        IV.  & Results                          & 2--3                  \\ \hline
-        V.   & Evaluation                       & 1-2                   \\ \hline
-        VI.  & Conclusions                      & 1                     \\ \hline
-    \end{tabular}
-\end{table}
 
 \newpage
 \bibliography{projectpaper}
