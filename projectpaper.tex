@@ -263,7 +263,7 @@ For the Gaussian Blur implementation, I have used the built in implementations a
 
 Brightness and contrast are two operations that just perform a defined action on each pixel, this means that the implementations in the different libraries will be doing exactly the same thing.
 
-\subsection{Rust optimizations}
+\subsection{Web Assembly optimizations}
 
 JavaScript comes with no options for optimizing performance, as it is run by the browser as JavaScript. However, as Rust is first compiled to assembly, it offers a range of ways to trade off between size and speed, and some methods that have the potential to improve both.
 
@@ -280,6 +280,83 @@ Finally, there is the \texttt{wasm-opt} tool, which allows for optimizing a \tex
     \item \texttt{-O3} : optimize aggressively for speed
 \end{itemize}
 
+\subsubsection{Results}
+
+The performance of the various options are to be evaluated in order to determine what should be used when collecting the results, as both JavaScript and Web Assembly should be performing at the best they can be made. For this experiment, the Gaussian blur method has been used as it is computationally intensive.
+
+For the Web Assembly optimizations, the measurements are based on the Gaussian blur task. The first measurement to take is how long each process takes.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                symbolic x coords={No changes, LTO, Opt-s, Opt-z, -Os, -Oz, -O, -O3},
+                xtick=data,
+                x tick label style={rotate=45, anchor=north east, inner sep=0mm},
+                bar width = 20,
+                enlarge x limits = 0.1,
+                ybar,
+                ylabel = Time(Milliseconds),
+                y label style={at={(axis description cs:-0.01,.5)},anchor=south},
+                ymin=0,
+                nodes near coords,
+                axis x line*=bottom,
+                axis y line*=left,
+                width=400,
+                height=200		]
+            \addplot coordinates {
+                    (No changes,  1031)
+                    (LTO, 846)
+                    (Opt-s, 2275)
+                    (Opt-z, 3846)
+                    (-Os, 1078)
+                    (-Oz, 1087)
+                    (-O, 1154)
+                    (-O3, 1028)
+                };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Processing time of Web Assembly optimizations}
+\end{figure}
+
+These measurements need to be contrasted with the file sizes they produce to fully evaluate the benefit of each optimization, as if for the small increase in performance there was a large cost in file size it would not be feasible.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                symbolic x coords={No changes, LTO, Opt-s, Opt-z, -Os, -Oz, -O, -O3},
+                xtick=data,
+                x tick label style={rotate=45, anchor=north east, inner sep=0mm},
+                bar width = 20,
+                enlarge x limits = 0.1,
+                ybar,
+                ylabel = Size(Kilobytes),
+                y label style={at={(axis description cs:-0.01,.5)},anchor=south},
+                ymin=0,
+                nodes near coords,
+                axis x line*=bottom,
+                axis y line*=left,
+                width=400,
+                height=200		]
+            \addplot coordinates {
+                    (No changes,  1100)
+                    (LTO, 920.7)
+                    (Opt-s, 954.2)
+                    (Opt-z, 979.5)
+                    (-Os, 981.5)
+                    (-Oz, 981.4)
+                    (-O, 981.5)
+                    (-O3, 984.2)
+                };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{File size of Web Assembly optimizations}
+\end{figure}
+
+From the results, the file size isn't greatly affected by the optimization method chosen, however choosing any does provide a reduction in comparison to not choosing any optimizations. However, when it comes to computation time, there is a large range of results, with only Link Time optimization providing an improvement over not making any changes, with the methods designed to provide a smaller file size taking considerably longer, despite not leading to a large difference in file size. Overall, compiling with Link Time Optimization seems to provide an overall better performing program, both when it comes to size and speed.
+
+
 
 \subsection{Testing}
 
@@ -292,8 +369,6 @@ Memory usage is also an important metric, especially on mobile devices that migh
 In order to verify the accuracy of my Rust implementations, I used the \texttt{web\_sys} crate which allows me to run \texttt{console.time} inside my rust code and observed a discrepancy of under 100ms between the internal and external time, which is small enough given the times involved to not be an issue.
 
 A full profiler hasn't been used here as there aren't widely used JavaScript profilers that evaluate at the level of how long each function takes. Instead, they focus on things such as response time and CPU utilization of the overall program, which doesn't deliver the results I'd look for.
-
-The rust optimizations are tested just one at a time, while compounding them can provide a benefit, it is too many combinations to realistically present, and testing one at a time provides useful metrics of how good each is regardless.
 
 \subsection{Verification and Validation}
 
@@ -437,77 +512,6 @@ For the JPEG encoding I measured the time and memory consumption for the overall
         \end{tikzpicture}
         \caption{Memory consumption of process}
     \end{figure}\end{minipage}
-\\
-\\
-For the Web Assembly optimizations, the measurements are based on the Gaussian blur task. Below are the measurement for how long the task takes with the different optimizations in place.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-                symbolic x coords={No changes, LTO, Opt-s, Opt-z, -Os, -Oz, -O, -O3},
-                xtick=data,
-                x tick label style={rotate=45, anchor=north east, inner sep=0mm},
-                bar width = 20,
-                enlarge x limits = 0.1,
-                ybar,
-                ylabel = Time(Milliseconds),
-                y label style={at={(axis description cs:-0.01,.5)},anchor=south},
-                ymin=0,
-                nodes near coords,
-                axis x line*=bottom,
-                axis y line*=left,
-                width=400,
-                height=200		]
-            \addplot coordinates {
-                    (No changes,  1031)
-                    (LTO, 846)
-                    (Opt-s, 2275)
-                    (Opt-z, 3846)
-                    (-Os, 1078)
-                    (-Oz, 1087)
-                    (-O, 1154)
-                    (-O3, 1028)
-                };
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Processing time of Web Assembly optimizations}
-\end{figure}
-
-These measurements need to be contrasted with the file sizes they produce to fully evaluate the benefit of each optimization.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-                symbolic x coords={No changes, LTO, Opt-s, Opt-z, -Os, -Oz, -O, -O3},
-                xtick=data,
-                x tick label style={rotate=45, anchor=north east, inner sep=0mm},
-                bar width = 20,
-                enlarge x limits = 0.1,
-                ybar,
-                ylabel = Size(Kilobytes),
-                y label style={at={(axis description cs:-0.01,.5)},anchor=south},
-                ymin=0,
-                nodes near coords,
-                axis x line*=bottom,
-                axis y line*=left,
-                width=400,
-                height=200		]
-            \addplot coordinates {
-                    (No changes,  1100)
-                    (LTO, 920.7)
-                    (Opt-s, 954.2)
-                    (Opt-z, 979.5)
-                    (-Os, 981.5)
-                    (-Oz, 981.4)
-                    (-O, 981.5)
-                    (-O3, 984.2)
-                };
-        \end{axis}
-    \end{tikzpicture}
-    \caption{File size of Web Assembly optimizations}
-\end{figure}
 
 
 
@@ -521,7 +525,7 @@ The Web Assembly implementation also has much lower memory consumption, which is
 
 Rust has a big advantage in developer experience for having static types, meaning that the language server is capable of telling the developer what parameters a function takes, and what their types are. This is very useful for debugging as it may be the case that an incorrect type of variable has been passed to a function, in JavaScript this could either lead to unexpected behaviour, or cause an error further down the chain, whereas in Rust, this problem will be immediately highlighted to the user in their IDE. This also makes it easier to remember what functions do without looking at documentation as you can see what parameters they need and what type of data you will get out from it. JavaScript does offer the ability for static types through TypeScript, a superset of the language that includes types, however due to this being an addition to the language, not all packages provide it, so the benefit isn't as large as with Rust.
 
-The ability to tune the compilation step to give the desired results is another big advantage of Rust, choosing between fast performance and small file size. From the results, the file size isn't greatly affected by the optimization method chosen, however choosing any does provide a reduction in comparison to not choosing any optimizations. However, when it comes to computation time, there is a large range of results, with only Link Time optimization providing an improvement over not making any changes, with the methods designed to provide a smaller file size taking considerably longer, despite not leading to a large difference in file size.
+
 
 
 \subsection{Solution Limitations}
