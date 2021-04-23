@@ -27,7 +27,7 @@
 
     \subsection{Aims}
 
-    To determine in which cases implementing algorithms in web assembly is the right choice to make
+    To determine in which cases implementing algorithms in Web Assembly is the right choice to make
 
     \subsection{Method}
 
@@ -81,11 +81,11 @@ The Research question is to find in which cases Web Assembly offers a benefit ov
 
 \section{Related Work}
 
-\subsection{Language options for web assembly}
+\subsection{Language options for Web Assembly}
 
-Web Assembly is compatible with any language that compiles to assembly, meaning there is a large range of languages to choose from. However, as web assembly doesn't currently have a garbage collector, it is most efficient to choose a language that doesn't do garbage collection, such as C \cite{haas2017bringing}. Alongside C, Rust is another language that doesn't have garbage collection and advertises itself as good to use for Web Assembly.
+Web Assembly is compatible with any language that compiles to assembly, meaning there is a large range of languages to choose from. However, as Web Assembly doesn't currently have a garbage collector, it is most efficient to choose a language that doesn't do garbage collection, such as C \cite{haas2017bringing}. Alongside C, Rust is another language that doesn't have garbage collection and advertises itself as good to use for Web Assembly.
 
-One advantage of Rust is that it has a large ecosystem of packages to help with the production of Web Assembly code. One such library is wasm-bindgen which allows for binding functions and other features in Rust to the JavaScript produced, allowing for multiple functions to be included in one web assembly file \cite{wasmbindgen}. It also provides availability for using native browser functions, such as \texttt{window.alert}, within your Rust functions. Another is wasm-pack which creates a JavaScript library containing the generated web assembly code, making it easier to use in code and publish.
+One advantage of Rust is that it has a large ecosystem of packages to help with the production of Web Assembly code. One such library is wasm-bindgen which allows for binding functions and other features in Rust to the JavaScript produced, allowing for multiple functions to be included in one Web Assembly file \cite{wasmbindgen}. It also provides availability for using native browser functions, such as \texttt{window.alert}, within your Rust functions. Another is wasm-pack which creates a JavaScript library containing the generated Web Assembly code, making it easier to use in code and publish.
 
 % Might need to discuss what garbage collection is
 % Garbage collection in WASM https://github.com/WebAssembly/proposals/issues/16
@@ -120,7 +120,7 @@ Alongside image processing, Web Assembly is also used for a range of other purpo
 Another implementation of Web Assembly is in determining the quality of DNA sequencing data, as used by fastq.bio \cite{fastq}. In this implementation they achieved a $9\times $ performance improvement, managing to increase that to $21 \times$ with some additional optimizations such as using a single function call.
 
 
-However, when running code natively, Web Assembly may not be the best solution. A JavaScript bundler is a program which creates large files from the smaller JavaScript files needed for a web application, this is useful as better performance can be achieved by sending a few large files compared to lots of smaller files. The author of a native JavaScript bundler observed that there was a 10$\times$ speed improvement by running it natively, compared to using web assembly \cite{esbuild}.
+However, when running code natively, Web Assembly may not be the best solution. A JavaScript bundler is a program which creates large files from the smaller JavaScript files needed for a web application, this is useful as better performance can be achieved by sending a few large files compared to lots of smaller files. The author of a native JavaScript bundler observed that there was a 10$\times$ speed improvement by running it natively, compared to using Web Assembly \cite{esbuild}.
 
 This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns were observed of 2.5$\times$ in Google Chrome compared to the native code. These benchmarks are taken from SPEC CPU2006 and SPEC CPU2017. A sample of these results are shown in Table \ref{native}.
 \begin{table}[H]
@@ -163,7 +163,7 @@ One of the most popular image processing libraries for JavaScript is Sharp with 
 
 % Add description of what the table headings mean
 
-This shows native libraries being significantly faster than the solution in pure JavaScript, which means that even with the slowdown of web assembly compared to native code as discussed before, web assembly should still outperform JavaScript in this regard.
+This shows native libraries being significantly faster than the solution in pure JavaScript, which means that even with the slowdown of Web Assembly compared to native code as discussed before, Web Assembly should still outperform JavaScript in this regard.
 
 \subsection{Image formats}
 
@@ -263,6 +263,23 @@ For the Gaussian Blur implementation, I have used the built in implementations a
 
 Brightness and contrast are two operations that just perform a defined action on each pixel, this means that the implementations in the different libraries will be doing exactly the same thing.
 
+\subsection{Rust optimizations}
+
+JavaScript comes with no options for optimizing performance, as it is run by the browser as JavaScript. However, as Rust is first compiled to assembly, it offers a range of ways to trade off between size and speed, and some methods that have the potential to improve both.
+
+The first optimization is Link-time optimization (LTO), this takes the intermediate representation of the code, allowing the whole codebase to be optimized together, rather than optimizing each file individually. Doing this can help to improve both the size and performance of the code.
+
+The rust compiler then has an “opt-level”, which allows the user to specify how far they are willing to optimize size at the detriment of performance, this has two options, \texttt{s} and \texttt{z}, with z being the most optimized for size.
+
+Finally, there is the \texttt{wasm-opt} tool, which allows for optimizing a \texttt{.wasm} file after it has been created, to optimize for either speed or size. It provides the following options
+
+\begin{itemize}
+    \item \texttt{-Os} : optimize for size
+    \item \texttt{-Oz} : optimize aggressively for size
+    \item \texttt{-O} : optimize for speed
+    \item \texttt{-O3} : optimize aggressively for speed
+\end{itemize}
+
 
 \subsection{Testing}
 
@@ -276,10 +293,11 @@ In order to verify the accuracy of my Rust implementations, I used the \texttt{w
 
 A full profiler hasn't been used here as there aren't widely used JavaScript profilers that evaluate at the level of how long each function takes. Instead, they focus on things such as response time and CPU utilization of the overall program, which doesn't deliver the results I'd look for.
 
+The rust optimizations are tested just one at a time, while compounding them can provide a benefit, it is too many combinations to realistically present, and testing one at a time provides useful metrics of how good each is regardless.
 
 \subsection{Verification and Validation}
 
-To verify these results, they are compared against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either web assembly or JavaScript it is expected for this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
+To verify these results, they are compared against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either Web Assembly or JavaScript it is expected for this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
 
 \subsection{Stages of the life cycle undertaken}
 
@@ -288,7 +306,10 @@ The development of this project was done using the Waterfall methodology \cite{r
 
 \section{Results}
 
-Testing was done on a 24MP, 11 Megabyte, PNG format photo of a deer. The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
+Testing was done on a 24MP, 11 Megabyte, PNG format photo of a deer. The computation was done on an Intel i5 6600 processor with 16 GB of RAM.
+
+
+The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
 
 \begin{minipage}[t]{0.5\textwidth}
     \begin{figure}[H]
@@ -416,9 +437,77 @@ For the JPEG encoding I measured the time and memory consumption for the overall
         \end{tikzpicture}
         \caption{Memory consumption of process}
     \end{figure}\end{minipage}
+\\
+\\
+For the Web Assembly optimizations, the measurements are based on the Gaussian blur task. Below are the measurement for how long the task takes with the different optimizations in place.
 
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                symbolic x coords={No changes, LTO, Opt-s, Opt-z, -Os, -Oz, -O, -O3},
+                xtick=data,
+                x tick label style={rotate=45, anchor=north east, inner sep=0mm},
+                bar width = 20,
+                enlarge x limits = 0.1,
+                ybar,
+                ylabel = Time(Milliseconds),
+                y label style={at={(axis description cs:-0.01,.5)},anchor=south},
+                ymin=0,
+                nodes near coords,
+                axis x line*=bottom,
+                axis y line*=left,
+                width=400,
+                height=200		]
+            \addplot coordinates {
+                    (No changes,  1031)
+                    (LTO, 846)
+                    (Opt-s, 2275)
+                    (Opt-z, 3846)
+                    (-Os, 1078)
+                    (-Oz, 1087)
+                    (-O, 1154)
+                    (-O3, 1028)
+                };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Processing time of Web Assembly optimizations}
+\end{figure}
 
+These measurements need to be contrasted with the file sizes they produce to fully evaluate the benefit of each optimization.
 
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                symbolic x coords={No changes, LTO, Opt-s, Opt-z, -Os, -Oz, -O, -O3},
+                xtick=data,
+                x tick label style={rotate=45, anchor=north east, inner sep=0mm},
+                bar width = 20,
+                enlarge x limits = 0.1,
+                ybar,
+                ylabel = Size(Kilobytes),
+                y label style={at={(axis description cs:-0.01,.5)},anchor=south},
+                ymin=0,
+                nodes near coords,
+                axis x line*=bottom,
+                axis y line*=left,
+                width=400,
+                height=200		]
+            \addplot coordinates {
+                    (No changes,  1100)
+                    (LTO, 920.7)
+                    (Opt-s, 954.2)
+                    (Opt-z, 979.5)
+                    (-Os, 981.5)
+                    (-Oz, 981.4)
+                    (-O, 981.5)
+                    (-O3, 984.2)
+                };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{File size of Web Assembly optimizations}
+\end{figure}
 
 
 
@@ -426,22 +515,24 @@ For the JPEG encoding I measured the time and memory consumption for the overall
 
 \subsection{Solution Strengths}
 
-The web assembly solution offers significant improvement over JavaScript for complex algorithms, being $4.04 \times$ faster at performing the Gaussian blur task and $1.55 \times$ faster at performing JPEG encoding. For the Gaussian blur, with a processing time of 12 seconds for JavaScript, this takes it above the 10-second limit for keeping the user's attention, as discussed in \cite{nielsen1994usability}, giving web assembly a big advantage in making the application feel responsive. These improvements are roughly in line with the results found by fastq.bio in their implementation \cite{fastq}.
+The Web Assembly solution offers significant improvement over JavaScript for complex algorithms, being $4.04 \times$ faster at performing the Gaussian blur task and $1.55 \times$ faster at performing JPEG encoding. For the Gaussian blur, with a processing time of 12 seconds for JavaScript, this takes it above the 10-second limit for keeping the user's attention, as discussed in \cite{nielsen1994usability}, giving Web Assembly a big advantage in making the application feel responsive. These improvements are roughly in line with the results found by fastq.bio in their implementation \cite{fastq}.
 
-The web assembly implementation also has much lower memory consumption, which is important for low power devices such as mobile phones with low memory capacity. This is likely due to the increased control the language has for memory management, allowing the programmer to specify how much memory they want and when they don't want it anymore. In contrast, JavaScript handles all the memory management itself, making assumptions about when memory can be freed.
+The Web Assembly implementation also has much lower memory consumption, which is important for low power devices such as mobile phones with low memory capacity. This is likely due to the increased control the language has for memory management, allowing the programmer to specify how much memory they want and when they don't want it anymore. In contrast, JavaScript handles all the memory management itself, making assumptions about when memory can be freed.
 
 Rust has a big advantage in developer experience for having static types, meaning that the language server is capable of telling the developer what parameters a function takes, and what their types are. This is very useful for debugging as it may be the case that an incorrect type of variable has been passed to a function, in JavaScript this could either lead to unexpected behaviour, or cause an error further down the chain, whereas in Rust, this problem will be immediately highlighted to the user in their IDE. This also makes it easier to remember what functions do without looking at documentation as you can see what parameters they need and what type of data you will get out from it. JavaScript does offer the ability for static types through TypeScript, a superset of the language that includes types, however due to this being an addition to the language, not all packages provide it, so the benefit isn't as large as with Rust.
 
+The ability to tune the compilation step to give the desired results is another big advantage of Rust, choosing between fast performance and small file size. From the results, the file size isn't greatly affected by the optimization method chosen, however choosing any does provide a reduction in comparison to not choosing any optimizations. However, when it comes to computation time, there is a large range of results, with only Link Time optimization providing an improvement over not making any changes, with the methods designed to provide a smaller file size taking considerably longer, despite not leading to a large difference in file size.
+
+
 \subsection{Solution Limitations}
 
-Both the JavaScript and Web Assembly options had significantly worse performance in comparison to the native code of imagemagick, with web assembly being $7.5 \times$ slower, which is in line with the results found in the related work section of this paper. There is still significant overhead to running code in websites, and the benefit of the flexibility has to outweigh it.
+Both the JavaScript and Web Assembly options had significantly worse performance in comparison to the native code of imagemagick, with Web Assembly being $7.5 \times$ slower, which is in line with the results found in the related work section of this paper. There is still significant overhead to running code in websites, and the benefit of the flexibility has to outweigh it.
 
-In addition, while results show that for complex algorithms, web assembly does offer a significant benefit over JavaScript, for simple algorithms, JavaScript performs better. This is likely due to the additional complexity involved in getting web assembly code running in browsers, compared to JavaScript which they have been built to run for many years.
+In addition, while results show that for complex algorithms, Web Assembly does offer a significant benefit over JavaScript, for simple algorithms, JavaScript performs better. This is likely due to the additional complexity involved in getting Web Assembly code running in browsers, compared to JavaScript which they have been built to run for many years.
 
 While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
 
 
-\newpage
 \section{Conclusions}
 
 One new development that could help with image processing on the web is WebGPU \cite{webgpu}. This is a standard that allows for access of the GPU by both JavaScript and Web Assembly. Due to the nature of image processing algorithms in performing parallel operations, such as in JPEG where much of the computation is done on the $8\times 8$ blocks, each of these can be parallelized. As GPUs are designed for such operations, often having many more cores than a CPU, this could lead to a large improvement in performance.
