@@ -221,7 +221,9 @@ With JavaScript there is more choice, allowing me to choose the one that had the
 
 \subsection{Choice of algorithms}
 
-There is a wide range of algorithms to choose from when it comes to image processing. The main factor to consider when choosing an algorithm for this project is how complex it is. This is because I want the algorithm itself to take enough time that the other processing involved such as copying from memory takes a comparatively negligible amount of time, improving the accuracy of the results captured. In practice this means discounting algorithms that look at each pixel and perform a defined action on it, such as brightness. When editing photos, the operation that tends to take the most time is exporting the images to JPEG, so I decided to explore implementing the JPEG algorithm \cite{jpeg}.
+There is a wide range of algorithms to choose from when it comes to image processing. The algorithms have been chosen to ensure they cover a wide range of performance characteristics. Some of the algorithms require a large amount of processing and are expected to take over a second, whereas others just manipulate each pixel in turn and so are expected to complete much faster. This is to provide a full picture of if there is a certain type of algorithm that benefits from one of the two approaches.
+
+When editing photos, the operation that tends to take the most time is exporting the images to JPEG, so I decided to explore implementing the JPEG algorithm \cite{jpeg}.
 
 \subsection{Implementation of JPEG}
 
@@ -366,7 +368,7 @@ The first evaluation is to determine the running time of the algorithm. The test
 
 Memory usage is also an important metric, especially on mobile devices that might have small amounts of memory. This can be measured using the \texttt{/usr/bin/time} command on Linux devices, which measures both the time taken and memory usage of a command. This metric is less accurate than the timing evaluation already discussed as it measures the memory usage of the whole command, rather than just of the JPEG conversion. To try and counteract this difference, the code outside the JPEG conversion is kept as similar as possible to ensure it has the same memory consumption.
 
-In order to verify the accuracy of my Rust implementations, I used the \texttt{web\_sys} crate which allows me to run \texttt{console.time} inside my rust code and observed a discrepancy of under 100ms between the internal and external time, which is small enough given the times involved to not be an issue.
+In order to improve the accuracy of the calculations of the Web Assembly implementation, I have used the \texttt{web\_sys} crate which allows me to run \texttt{console.time} inside my rust code. This displayed a discrepancy of around 100ms between the internal and external time, which is insignificant on some of the longer running programs, but is useful for the shorter running programs.
 
 A full profiler hasn't been used here as there aren't widely used JavaScript profilers that evaluate at the level of how long each function takes. Instead, they focus on things such as response time and CPU utilization of the overall program, which doesn't deliver the results I'd look for.
 
@@ -410,7 +412,7 @@ The below chart shows the time comparison of the JavaScript and Web Assembly imp
                     };
                 \addplot coordinates {
                         (JavaScript,   12)
-                        (Web Assembly,  2.97)
+                        (Web Assembly,  1.14)
                     };
                 \legend{JPEG Encoding,Gaussian Blur}
             \end{axis}
@@ -438,11 +440,11 @@ The below chart shows the time comparison of the JavaScript and Web Assembly imp
                             anchor=north,legend columns=-1}		]
                 \addplot coordinates {
                         (JavaScript,   102)
-                        (Web Assembly,  269)
+                        (Web Assembly,  77)
                     };
                 \addplot coordinates {
                         (JavaScript,   103)
-                        (Web Assembly,  271)
+                        (Web Assembly,  278)
                     };
                 \legend{Brightness, Contrast}
             \end{axis}
@@ -519,7 +521,7 @@ For the JPEG encoding I measured the time and memory consumption for the overall
 
 \subsection{Solution Strengths}
 
-The Web Assembly solution offers significant improvement over JavaScript for complex algorithms, being $4.04 \times$ faster at performing the Gaussian blur task and $1.55 \times$ faster at performing JPEG encoding. For the Gaussian blur, with a processing time of 12 seconds for JavaScript, this takes it above the 10-second limit for keeping the user's attention, as discussed in \cite{nielsen1994usability}, giving Web Assembly a big advantage in making the application feel responsive. These improvements are roughly in line with the results found by fastq.bio in their implementation \cite{fastq}.
+The Web Assembly solution offers significant improvement over JavaScript for complex algorithms, being $8.3 \times$ faster at performing the Gaussian blur task and $1.55 \times$ faster at performing JPEG encoding. For the Gaussian blur, with a processing time of 12 seconds for JavaScript, this takes it above the 10-second limit for keeping the user's attention, as discussed in \cite{nielsen1994usability}, giving Web Assembly a big advantage in making the application feel responsive. These improvements are roughly in line with the results found by fastq.bio in their implementation \cite{fastq}.
 
 The Web Assembly implementation also has much lower memory consumption, which is important for low power devices such as mobile phones with low memory capacity. This is likely due to the increased control the language has for memory management, allowing the programmer to specify how much memory they want and when they don't want it anymore. In contrast, JavaScript handles all the memory management itself, making assumptions about when memory can be freed.
 
@@ -532,7 +534,7 @@ Rust has a big advantage in developer experience for having static types, meanin
 
 Both the JavaScript and Web Assembly options had significantly worse performance in comparison to the native code of imagemagick, with Web Assembly being $7.5 \times$ slower, which is in line with the results found in the related work section of this paper. There is still significant overhead to running code in websites, and the benefit of the flexibility has to outweigh it.
 
-In addition, while results show that for complex algorithms, Web Assembly does offer a significant benefit over JavaScript, for simple algorithms, JavaScript performs better. This is likely due to the additional complexity involved in getting Web Assembly code running in browsers, compared to JavaScript which they have been built to run for many years.
+In addition, while results show that for complex algorithms, Web Assembly does offer a significant benefit over JavaScript, for simple algorithms, it's a trade-off between the two as to which is faster. This is likely due to the additional complexity involved in getting Web Assembly code running in browsers, compared to JavaScript which they have been built to run for many years.
 
 While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
 
