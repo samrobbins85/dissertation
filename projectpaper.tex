@@ -35,7 +35,11 @@
 
     \subsection{Results}
 
+    An improvement of web assembly compared to JavaScript of over $8\times$ in some tasks, however demonstrating that some tasks and contexts are less suitable for the use of Web Assembly.
+
     \subsection{Conclusions}
+
+    Web Assembly has the capability for providing large increases in performance, however it is not a magic bullet for performance, and the individual task needs considering before using it.
 \end{abstract}
 
 \begin{keywords}
@@ -540,6 +544,8 @@ While I did discuss the benefits of static types in the strengths section, this 
 
 
 \section{Conclusions}
+
+In this paper, we have demonstrated Web Assembly offering considerable performance improvements over JavaScript, with it being up to $8\times$ faster. However, we also demonstrated areas where Web Assembly is not suitable, such as when you have the option to run native code or in small low performance tasks. We also evaluated what options to choose when compiling web assembly, finding that Link Time Optimization can provide an improvement both in performance and file size.
 
 One new development that could help with image processing on the web is WebGPU \cite{webgpu}. This is a standard that allows for access of the GPU by both JavaScript and Web Assembly. Due to the nature of image processing algorithms in performing parallel operations, such as in JPEG where much of the computation is done on the $8\times 8$ blocks, each of these can be parallelized. As GPUs are designed for such operations, often having many more cores than a CPU, this could lead to a large improvement in performance.
 
