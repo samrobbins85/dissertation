@@ -258,16 +258,47 @@ This then forms a sequence of values, ideally with many zeros at the end. As the
 
 The remainder of the algorithm involves correctly writing the data to a file. For this the source code for the JPEG encoders in the libraries discussed previously used, as this work isn't computationally intensive, but requires a lot of detail in order to ensure it is done correctly.
 
-\subsection{Gaussian Blur}
+\subsection{Library provided functions}
+
+As both libraries provide algorithms for Gaussian Blur, Brightness and Contrast, they have been used for the testing, rather than hand writing algorithms.
+
+\subsubsection{Gaussian Blur}
 
 Gaussian blur has a wide variety of applications, but is particularly useful for image denoising. The blurring effect helps to reduce noise artefacts caused by low light, and this is particularly useful in low end cameras such as mobile phones due to their small sensor size leading to poor performance in low light.
 
 
 For the Gaussian Blur implementation, I have used the built in implementations available in jimp and the image crate. These behave in a very similar way and so are suitable for comparison, and the same values are used for both implementation.
 
-\subsection{Brightness and Contrast}
+\subsubsection{Brightness}
 
-Brightness and contrast are two operations that just perform a defined action on each pixel, this means that the implementations in the different libraries will be doing exactly the same thing.
+The implementation of brightness has two sections, depending on if the provided value is positive or negative. If the value is negative then the desired operation is to reduce the values of all the pixels, and so needing to multiply by a value less than one. So for a pixel value V and brightness value B, the new pixel value will be $V'$.
+
+$$
+    V'=V\times(1+B)
+$$
+
+However, if the brightness value is greater than 1, then the new pixel value will be
+
+$$
+    V'=(255-V)\times B
+$$
+
+
+\subsubsection{Contrast}
+
+The exact implementation of contrast can vary, but the basic algorithm follows the following structure:
+
+The user provides a value C of the contrast they want implemented, from this F is calculated in the following manner:
+
+$$
+    F=\frac{259(C+255)}{255(259-C)}
+$$
+
+Then for each channel (r, g or b) on each pixel, the new value V' is calculated from the initial value V
+
+$$
+    V'=F(V-128)+128
+$$
 
 \subsection{Web Assembly optimizations}
 
@@ -575,14 +606,30 @@ Rust has a big advantage in developer experience for having static types, meanin
 
 Both the JavaScript and Web Assembly options had significantly worse performance in comparison to the native code of imagemagick, with Web Assembly being $7.5 \times$ slower, which is in line with the results found in the related work section of this paper. There is still significant overhead to running code in websites, and the benefit of the flexibility has to outweigh it.
 
-In addition, while results show that for complex algorithms, Web Assembly does offer a significant benefit over JavaScript, for simple algorithms, it's a trade-off between the two as to which is faster. This is likely due to the additional complexity involved in getting Web Assembly code running in browsers, compared to JavaScript which they have been built to run for many years.
+% In addition, while results show that for complex algorithms, Web Assembly does offer a significant benefit over JavaScript, for simple algorithms, it's a trade-off between the two as to which is faster. This is likely due to the additional complexity involved in getting Web Assembly code running in browsers, compared to JavaScript which they have been built to run for many years.
+
+The results show that with Web Assembly, the contrast implementation is slower than both the JavaScript implementation and the Web Assembly implementation of brightness. This was surprising as both algorithms took the same time with JavaScript. On closer inspection of the source code of both libraries, while jimp (the JavaScript library) was using a contrast algorithm like described in the solution section, image (the Rust Crate), used a different algorithm for calculating contrast which was significantly less efficient.
+
+For the JavaScript implementation, the formula for the final $V'$ was
+
+$$
+    V'=\frac{(C+1)\times (V-127)}{(1-C)}+127
+$$
+
+whereas in Rust it was implemented as
+
+$$
+    V'=\bigg(\bigg(\bigg(\frac{V}{\max}-0.5)\times\bigg(\frac{100+C}{100}\bigg)^2\bigg)+0.5\bigg)\times \max
+$$
+
+The Rust implementation has significantly more usage of both multiplication and division. Note that the \texttt{max} value is the maximum value a pixel's colour can be, so 255 for standard images. Whilst it is possible that this contrast calculation provides a more desired effect, it also causes the decrease in performance found in the results.
 
 While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
 
 
 \section{Conclusions}
 
-In this paper, we have demonstrated Web Assembly offering considerable performance improvements over JavaScript, with it being up to $8\times$ faster. However, we also demonstrated areas where Web Assembly is not suitable, such as when you have the option to run native code or in small low performance tasks. We also evaluated what options to choose when compiling web assembly, finding that Link Time Optimization can provide an improvement both in performance and file size.
+In this paper, we have demonstrated Web Assembly offering considerable performance improvements over JavaScript, with it being up to $8\times$ faster. However, we also demonstrated areas where Web Assembly is not suitable, such as when you have the option to run native code. We also evaluated what options to choose when compiling web assembly, finding that Link Time Optimization can provide an improvement both in performance and file size.
 
 One new development that could help with image processing on the web is WebGPU \cite{webgpu}. This is a standard that allows for access of the GPU by both JavaScript and Web Assembly. Due to the nature of image processing algorithms in performing parallel operations, such as in JPEG where much of the computation is done on the $8\times 8$ blocks, each of these can be parallelized. As GPUs are designed for such operations, often having many more cores than a CPU, this could lead to a large improvement in performance.
 
