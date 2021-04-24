@@ -378,7 +378,44 @@ A full profiler hasn't been used here as there aren't widely used JavaScript pro
 
 \subsection{Verification and Validation}
 
-To verify these results, they are compared against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either Web Assembly or JavaScript it is expected for this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
+In order to verify the testing setup was only measuring the algorithm, an experiment was done to test if there were any constants involved in the implementation of brightness. To do this, a 100 MP photo was used, and scaled down to increments of 10 MP between 10 and 80 MP. If there was no constant, the expected result would be a linear relationship between number of pixels and time, however if there was a constant, this wouldn't change as the resolution increased, leading to a sublinear relationship.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                title={Relationship between Resolution and Time},
+                xlabel={Resolution (Megapixels)},
+                ylabel={Time (Milliseconds)},
+                xmin=0,
+                ymin=0,
+                axis x line*=bottom,
+                axis y line*=left,
+                legend style={at={(0.5,-0.2)},
+                        anchor=north,legend columns=-1}
+            ]
+
+            \addplot[
+                color = blue,
+                mark=*,
+            ]
+            coordinates {
+                    (10, 158)(20,287)(30,438)(40,572)(50,708)(60,856)(70,1077)(80,1157)
+                };
+            \addplot[mark=*, color=red] coordinates {
+                    (10, 106)(20,213)(30,323)(40,428)(50,574)(60,646)(70,757)(80,870)
+                };
+            \legend{JavaScript, Web Assembly}
+
+        \end{axis}
+    \end{tikzpicture}
+
+\end{figure}
+
+This shows a linear relationship for both JavaScript and Web Assembly, with some outliers, however the overall trend is still linear, suggesting these are just anomalous results. This verifies that there isn't a constant included, and so that the results are more accurate.
+
+
+To verify the results, they are compared against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either Web Assembly or JavaScript it is expected for this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
 
 \subsection{Stages of the life cycle undertaken}
 
