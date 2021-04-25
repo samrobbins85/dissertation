@@ -415,7 +415,6 @@ In order to verify the testing setup was only measuring the algorithm, an experi
     \centering
     \begin{tikzpicture}
         \begin{axis}[
-                title={Relationship between Resolution and Time},
                 xlabel={Resolution (Megapixels)},
                 ylabel={Time (Milliseconds)},
                 xmin=0,
@@ -440,6 +439,7 @@ In order to verify the testing setup was only measuring the algorithm, an experi
 
         \end{axis}
     \end{tikzpicture}
+    \caption{Relationship between time and resolution}
 
 \end{figure}
 
@@ -450,12 +450,23 @@ To verify the results, they are compared against a basic conversion using imagem
 
 \subsection{Stages of the life cycle undertaken}
 
-The development of this project was done using the Waterfall methodology \cite{royce1987managing}. First the system and software requirements were formed of what I want the application to do. Then doing requirements analysis to determine the sections needed to complete the work. The software architecture is then planned out during the design stage, determining what the system should look like. Then comes the actual coding, producing the system I need. Afterwards I test the system, ensuring the results are what I expect.
+The development of this project was done using the Waterfall methodology \cite{royce1987managing}. The main components of this are shown in Figure \ref{waterfall}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{waterfall.png}
+    \caption{Waterfall process}
+    \label{waterfall}
+\end{figure}
+
+
+Emphasis was particularly places on the system requirement and testing sections of this cycle, ensuring that appropriate algorithms were used and that testing was done to see if they followed the expected pattern or produced different results.
+
 
 
 \section{Results}
 
-Testing was done on a 24MP, 11 Megabyte, PNG format photo of a deer. The computation was done on an Intel i5 6600 processor with 16 GB of RAM.
+Testing was done on a 24MP, 11 Megabyte, PNG format photo of a deer. The computation was done on an Intel i5 6600 processor with 16 GB of RAM on Node.js version 14.6.0.
 
 
 The below chart shows the time comparison of the JavaScript and Web Assembly implementations.
@@ -527,7 +538,7 @@ The below chart shows the time comparison of the JavaScript and Web Assembly imp
 \\
 \\
 
-For the JPEG encoding I measured the time and memory consumption for the overall algorithm, including imagemagick, a command line conversion tool. This measurement was only applicable for JPEG encoding as in every process imagemagick will do image encoding to produce an output, so the measurement wouldn't just be measuring the algorithm in question.
+In addition to time taken, memory consumption was also measured for the JPEG encoding, including comparison to imagemagick, a command line conversion tool. This measurement was only applicable for JPEG encoding as in every process imagemagick will do image encoding to produce an output, so the measurement wouldn't just be measuring the algorithm in question.
 
 
 \begin{minipage}[t]{0.45\textwidth}
@@ -555,7 +566,7 @@ For the JPEG encoding I measured the time and memory consumption for the overall
                     };
             \end{axis}
         \end{tikzpicture}
-        \caption{Full process}
+        \caption{Time taken for the full process}
     \end{figure}\end{minipage}
 \begin{minipage}[t]{0.05\textwidth}
 \end{minipage}
