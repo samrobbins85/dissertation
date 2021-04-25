@@ -409,7 +409,7 @@ A full profiler hasn't been used here as there aren't widely used JavaScript pro
 
 \subsection{Verification and Validation}
 
-In order to verify the testing setup was only measuring the algorithm, an experiment was done to test if there were any constants involved in the implementation of brightness. To do this, a 100 MP photo was used, and scaled down to increments of 10 MP between 10 and 80 MP. If there was no constant, the expected result would be a linear relationship between number of pixels and time, however if there was a constant, this wouldn't change as the resolution increased, leading to a sublinear relationship.
+In order to verify the testing setup was only measuring the algorithm, an experiment was done to test if there were any constants involved in the implementation of brightness. To do this, a 100 MP photo was used, and scaled down to increments of 10 MP between 10 and 80 MP. If there was no constant, the expected result would be for the y-axis intercept to be zero, otherwise the intercept will show what the constant is.
 
 \begin{figure}[H]
     \centering
@@ -443,7 +443,7 @@ In order to verify the testing setup was only measuring the algorithm, an experi
 
 \end{figure}
 
-This shows a linear relationship for both JavaScript and Web Assembly, with some outliers, however the overall trend is still linear, suggesting these are just anomalous results. This verifies that there isn't a constant included, and so that the results are more accurate.
+Extrapolating the results found to a resolution of 0 megapixels, it can be seen that the y axis intercept is very close to zero. This verifies that there isn't a significant constant included, and so that the results are more accurate.
 
 
 To verify the results, they are compared against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either Web Assembly or JavaScript it is expected for this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
