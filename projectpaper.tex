@@ -80,7 +80,11 @@ The Research question is to find in which cases Web Assembly offers a benefit ov
 
 \subsection{Objectives}
 
-This project will implement a range of image processing algorithms in both Web Assembly and JavaScript and compare their performance.
+\textbf{Basic Aim}: Compare one complex algorithm
+
+\textbf{Intermedia Aim}: Compare multiple complex algorithms
+
+\textbf{Advanced Aim}: Look into tweaks that can be used to improve performance
 
 
 
@@ -652,12 +656,19 @@ The Web Assembly implementation also has much lower memory consumption, which is
 
 Rust has a big advantage in developer experience for having static types, meaning that the language server is capable of telling the developer what parameters a function takes, and what their types are. This is very useful for debugging as it may be the case that an incorrect type of variable has been passed to a function, in JavaScript this could either lead to unexpected behaviour, or cause an error further down the chain, whereas in Rust, this problem will be immediately highlighted to the user in their IDE. This also makes it easier to remember what functions do without looking at documentation as you can see what parameters they need and what type of data you will get out from it. JavaScript does offer the ability for static types through TypeScript, a superset of the language that includes types, however due to this being an addition to the language, not all packages provide it, so the benefit isn't as large as with Rust.
 
+Being able to easily package up Web Assembly using a tool like \texttt{wasm-pack} helps to eliminate the complexity of learning a new language for some developers. This is because developers who create Web Assembly code can package it in a way that from the outside is indistinguishable from if it had been written in JavaScript. Other developers can then easily use this in their code without having to know anything about Web Assembly, and just enjoy the performance benefits it can provide.
+
 
 
 
 \subsection{Solution Limitations}
 
 Both the JavaScript and Web Assembly options had significantly worse performance in comparison to the native code of imagemagick, with Web Assembly being $7.5 \times$ slower, which is in line with the results found in the related work section of this paper. There is still significant overhead to running code in websites, and the benefit of the flexibility has to outweigh it.
+
+While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
+
+JavaScript also has the benefit of being able to write your entire codebase in one language, rather than having to separate out into a different language for some tasks. This approach has already gained popularity through the use of Node.js for a backend, allowing for the use of JavaScript there as well as in the frontend. It also reduces the complexity of the build step for the application, as it would be required to build each piece of web assembly, before finally bundling everything together to publish on the web. These disadvantages particularly take place in small tasks such as adjusting the brightness where all the effort of converting to Web Assembly saves 25ms.
+
 
 The results show that with Web Assembly, the contrast implementation is slower than both the JavaScript implementation and the Web Assembly implementation of brightness. This was surprising as both algorithms took the same time with JavaScript. On closer inspection of the source code of both libraries, while jimp (the JavaScript library) was using a contrast algorithm like described in the solution section, image (the Rust Crate), used a different algorithm for calculating contrast which was significantly less efficient.
 
@@ -673,13 +684,15 @@ $$
     V'=\bigg(\bigg(\bigg(\frac{V}{\max}-0.5)\times\bigg(\frac{100+C}{100}\bigg)^2\bigg)+0.5\bigg)\times \max
 $$
 
+Note here that the JavaScript takes in the decimal version of the contrast (e.g. 0.2), whereas Rust takes in a percentage (e.g. 20), so these functions will produce very different results for the same value of C.
+
 The Rust implementation has significantly more usage of both multiplication and division. Note that the \texttt{max} value is the maximum value a pixel's colour can be, so 255 for standard images. Whilst it is possible that this contrast calculation provides a more desired effect, it also causes the decrease in performance found in the results.
 
 However, on observation of the images, the effect seems to be extremely similar, I used a contrast of 20\%, which produces a noticeable difference compared to the original image, but the two images look extremely similar.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=7cm]{no_blur.png}
+    \includegraphics[width=10cm]{no_blur.png}
     \caption{Original Image}
 \end{figure}
 \begin{figure}[H]
@@ -693,13 +706,13 @@ However, on observation of the images, the effect seems to be extremely similar,
     \caption{Web Assembly implementation}
 \end{figure}
 
-% Look at the images themselves
-
-While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
-
-% Discuss using native code
 
 \subsection{Self appraisal}
+
+The decision to use Rust for this project was a good choice, providing a range of tools that made the development process easier, such as \texttt{wasm-pack}. However, it may also have been a good experience using C or C++ due to their age in that they would have more algorithm examples and more complete libraries.
+
+The functions chosen provided the expected results, making them useful in proving my hypothesis, however it would have been good to be able to find an algorithm for which JavaScript was faster than Web Assembly. This may lie outside the realm of image processing algorithms, requiring a different approach entirely, or may have occurred when implementing the same algorithms in different ways, such as comparing iterative and recursive methods.
+
 
 
 
