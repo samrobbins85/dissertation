@@ -119,14 +119,14 @@ There are a range of metrics that are important when evaluating the performance 
     \item 10 seconds is the limit for keeping the user's attention.
 \end{itemize}
 
-Making these results actionable, Google introduced Core Web Vitals, which are metrics about how fast a page loads to determine how well it performs \cite{webvitals}. Largest Contentful Paint measures the time taken for most of the page to be loaded in, and suggests that it should occur within 2.5 seconds to be classified as “Good”.
+Making these results actionable, Google introduced Core Web Vitals, which are metrics about how fast a page loads to determine how well it performs \cite{webvitals}. One such metric is Largest Contentful Paint, which measures the time taken for most of the page to be loaded in, and suggests that it should occur within 2.5 seconds to be classified as “Good”.
 
 
 
 
 \subsection{Web Assembly Image Processing in use}
 
-Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly. This approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB from a total installed size of 96.5 MB \cite{nextjs}. As this was replacing a package with code in the project, it led to a large increase in the amount of code to maintain, but this could be abstracted to a package. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
+Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly. This approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB from a total installed size of 96.5 MB \cite{nextjs}. This did lead to a large increase in the lines of code in the project as they were previously using an external package for this, however, as the popularity of Web Assembly increases, the number of packages to do this will increase. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
 
 % Total installed size from https://nextjs.org/blog/next-10-1
 
@@ -148,12 +148,12 @@ This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns w
     \vspace*{6pt}
     \label{native}
     \begin{tabular}{cccc}\hline\hline
-        Benchmark & Field                   & Native execution time & Google Chrome execution time \\ \hline
-        bzip2     & Compression             & 370                   & 864                          \\
-        mcf       & Combinatorial           & 221                   & 180                          \\
-        milc      & Chromodynamics          & 375                   & 369                          \\
-        namd      & Molecular Dynamics      & 271                   & 369                          \\
-        gobmk     & Artificial Intelligence & 352                   & 537
+        Benchmark & Field                   & Native time(s) & Google Chrome time(s) \\ \hline
+        bzip2     & Compression             & 370            & 864                   \\
+        mcf       & Combinatorial           & 221            & 180                   \\
+        milc      & Chromodynamics          & 375            & 369                   \\
+        namd      & Molecular Dynamics      & 271            & 369                   \\
+        gobmk     & Artificial Intelligence & 352            & 537
     \end{tabular}
 \end{table}
 
@@ -197,11 +197,11 @@ There are a range of image formats in use, and the encoding and decoding of imag
     \vspace*{6pt}
     \label{speedratio}
     \begin{tabular}{ccc}\hline\hline
-        Algorithm     & Compression Speed & Compression Ratio \\ \hline
-        Lossless JPEG & 11.9              & 3.04              \\
-        JPEG-LS       & 19.6              & 4.21              \\
-        JPEG 2000     & 4.0               & 3.79              \\
-        PNG           & 3.6               & 3.35              \\
+        Algorithm     & Compression Speed (MB/s) & Compression Ratio \\ \hline
+        Lossless JPEG & 11.9                     & 3.04              \\
+        JPEG-LS       & 19.6                     & 4.21              \\
+        JPEG 2000     & 4.0                      & 3.79              \\
+        PNG           & 3.6                      & 3.35              \\
     \end{tabular}
 \end{table}
 
@@ -443,7 +443,9 @@ From the results, the file size isn't greatly affected by the optimization metho
 
 For JPEG, as the intensive section is the multiplication of matrices, there aren't properties of the image that lead to one taking longer than another. The exception to this is the overall size of the image as this determines the number of blocks that are created from the image. So for evaluation of the algorithms the size is the only factor to consider when choosing an image.
 
-The first evaluation is to determine the running time of the algorithm. The testing method uses the built-in \texttt{console.time} method in JavaScript to time how long a function takes. This is measured just over the actual function that does the JPEG conversion, rather than the whole process, so get more accurate results about the algorithm itself.
+The other algorithms similarly don't change with anything other than the size of the image as they are going over each pixel of the image and performing manipulation on them, so the choice of image isn't important for these either.
+
+The first evaluation is to determine the running time of the algorithm. The for JavaScript the testing method uses the built-in \texttt{console.time} method in JavaScript to time how long a function takes. In Rust the \texttt{web\_sys} crate is used, which allows for the performing of the \texttt{console.time} method over commands in Rust, helping to gather more accurate measurements.This is measured just over the actual function that performs the algorithm, rather than the whole process, so get more accurate results about the algorithm itself.
 
 Memory usage is also an important metric, especially on mobile devices that might have small amounts of memory. This can be measured using the \texttt{/usr/bin/time} command on Linux devices, which measures both the time taken and memory usage of a command. This metric is less accurate than the timing evaluation already discussed as it measures the memory usage of the whole command, rather than just of the JPEG conversion. To try and counteract this difference, the code outside the JPEG conversion is kept as similar as possible to ensure it has the same memory consumption.
 
@@ -667,9 +669,6 @@ Both the JavaScript and Web Assembly options had significantly worse performance
 
 While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
 
-JavaScript also has the benefit of being able to write your entire codebase in one language, rather than having to separate out into a different language for some tasks. This approach has already gained popularity through the use of Node.js for a backend, allowing for the use of JavaScript there as well as in the frontend. It also reduces the complexity of the build step for the application, as it would be required to build each piece of web assembly, before finally bundling everything together to publish on the web. These disadvantages particularly take place in small tasks such as adjusting the brightness where all the effort of converting to Web Assembly saves 25ms.
-
-
 The results show that with Web Assembly, the contrast implementation is slower than both the JavaScript implementation and the Web Assembly implementation of brightness. This was surprising as both algorithms took the same time with JavaScript. On closer inspection of the source code of both libraries, while jimp (the JavaScript library) was using a contrast algorithm like described in the solution section, image (the Rust Crate), used a different algorithm for calculating contrast which was significantly less efficient.
 
 For the JavaScript implementation, the formula for the final $V'$ was
@@ -707,6 +706,8 @@ However, on observation of the images, the effect seems to be extremely similar,
 \end{figure}
 
 
+JavaScript also has the benefit of being able to write your entire codebase in one language, rather than having to separate out into a different language for some tasks. This approach has already gained popularity through the use of Node.js for a backend, allowing for the use of JavaScript there as well as in the frontend. It also reduces the complexity of the build step for the application, as it would be required to build each piece of web assembly, before finally bundling everything together to publish on the web. These disadvantages particularly take place in small tasks such as adjusting the brightness where all the effort of converting to Web Assembly saves 25ms.
+
 \subsection{Self appraisal}
 
 The decision to use Rust for this project was a good choice, providing a range of tools that made the development process easier, such as \texttt{wasm-pack}. However, it may also have been a good experience using C or C++ due to their age in that they would have more algorithm examples and more complete libraries.
@@ -728,7 +729,6 @@ One new development that could help with image processing on the web is WebGPU \
 
 This work could also be developed by evaluating methods outside of image processing. Looking at more basic algorithms like sorting and searching may help to reveal underlying reasons why Web Assembly is faster or expose cases where JavaScript is faster.
 It may also be interesting to use multiple languages for Web Assembly to see if this benefit is restricted to Rust, or if it applies to all languages.
-
 
 
 \newpage
