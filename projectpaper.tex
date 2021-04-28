@@ -46,6 +46,7 @@
     Web Assembly, JavaScript, Image Processing
 \end{keywords}
 
+% Beef up the abstract quite a bit
 
 \section{Introduction}
 
@@ -61,14 +62,11 @@ In 1995 JavaScript was introduced as a method for introducing interactivity to w
 
 Web Assembly is a compilation target for languages that support it, meaning that you take the code in the language of your choice and compile it into a \texttt{.wasm} file. This file can then be called using JavaScript to make it behave like a standard JavaScript library.
 
+% More how web assembly works here
+
 Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript along with benefits such as type safety using static types, where JavaScript uses dynamic types. TypeScript works to try and solve this problem, but is just a transpiler to JavaScript, where Web Assembly allows for type checking at runtime.
 
 When it comes to producing a web application, the computation can be run on either the client (web browser) or the server, each coming with advantages and disadvantages. Running code on the server allows for the site to be performant on low power devices such as mobile phones, however by running code on the client you don't need to send data between the client and server on every interaction. This allows the site to continue being ran during times of intermittent connection and reduces the latency of operations. Running code on the client also allows for the site to be turned into a progressive web app, which only need to be connected to the internet once for installation similarly to an app \cite{biorn2017progressive}.
-
-
-
-
-
 
 \subsection{Objectives}
 
@@ -78,9 +76,6 @@ This project will implement a range of image processing algorithms in both Web A
 \subsection{Research Question}
 
 The Research question is to find in which cases Web Assembly offers a benefit over JavaScript, finding this out by implementing image processing algorithms using both mechanisms.
-
-
-
 
 
 \section{Related Work}
@@ -95,9 +90,13 @@ One advantage of Rust is that it has a large ecosystem of packages to help with 
 % Garbage collection in WASM https://github.com/WebAssembly/proposals/issues/16
 % WASM-bindgen
 
+\subsection{History of Rust}
+
+% Discuss a bit what Rust is solving etc
+
 \subsection{Important metrics}
 
-There are a range of metrics that are important when evaluating the performance of web tools. Response time is one such metric, and measures the time it takes to receive feedback from an operation. This applies for both the time it takes for a page to load and when doing something on a webpage. Research by Neilson discovered that \cite{nielsen1994usability}:
+There are a range of metrics that are important when evaluating the performance of web tools. Response time is one such metric, and measures the time it takes to receive feedback from an operation. This applies for both the time it takes for a page to load and when doing something on a webpage. Research by Nielson discovered that \cite{nielsen1994usability}:
 \begin{itemize}
     \item 0.1 second is the limit for instantaneous feeling
     \item 1.0 seconds is the limit for the user's flow of thought to remain uninterrupted
@@ -231,6 +230,8 @@ When editing photos, the operation that tends to take the most time is exporting
 
 \subsection{Implementation of JPEG}
 
+% Maybe a process diagram in here
+
 For both implementations, I started with prewritten code to decode an image into a long string of r,g,b,a values and the width and height of the image. The first step is the transformation of the image from the r,g,b colour space into the YCbCr colour space. Doing this is the simple task of calculating fractions based on the r,g and b values, so is not especially intensive.
 
 Next is downsampling; this isn't required by the JPEG standard, but can be used to further reduce image size. This reduces the resolution of the Cb and Cr components. It is done on these components as brightness (Y) is much more noticeable to the human eye compared to the other components, meaning the resolution can be reduced without a noticeable decrease in quality. To do this, each $2\times 2$ pixel area is averaged to a single pixel. On the borders where it isn't possible to get this area, the average is just calculated based on the available pixels.
@@ -239,8 +240,6 @@ For the next part of the algorithm, each component is split into $8\times 8$ blo
 
 The next step, the discrete cosine transform, is the most intensive step of the whole algorithm. The simplest way to implement this is to multiply each $8\times 8$ matrix by another $8\times 8$ matrix. For each entry in the resulting matrix there will be $8$ multiplications. In my implementation I use the naive implementation of Matrix multiplication, giving $8^3 = 512$ multiplications in total per block. There is an opportunity to improve the number of multiplications required here using Strassen's algorithm, which would use $8^{\log_2(7)}=343$ multiplications \cite{strassen1969gaussian}. However, it has been found that this algorithm is only better than the naive method for large matrices, and so on an $8\times 8$ matrix, the naive algorithm has better performance \cite{huang2016strassen}.
 
-
-% The design of this transform results in high absolute values in the top left of the matrix, with low absolute values in the bottom right.
 
 The next step is quantization, this is a lossy operation to keep only the lower frequency data as the human eye struggles to distinguish the strength of high frequency brightness variation. In order to apply quantization, for each element in the matrix, it is divided by the value in the same position of a quantization matrix and rounded. JPEG has a variety of quantization matrices, allowing for the user to specify their desired quality, with the matrices having lower values for higher qualities. Implementing the quantization matrix will lead to many of the elements being zero, allowing for easier encoding.
 
@@ -260,14 +259,33 @@ The remainder of the algorithm involves correctly writing the data to a file. Fo
 
 \subsection{Library provided functions}
 
-As both libraries provide algorithms for Gaussian Blur, Brightness and Contrast, they have been used for the testing, rather than hand writing algorithms.
+As both libraries provide algorithms for Gaussian Blur, Brightness and Contrast, they have been used for the testing, rather than writing the algorithms myself.
 
 \subsubsection{Gaussian Blur}
 
 Gaussian blur has a wide variety of applications, but is particularly useful for image denoising. The blurring effect helps to reduce noise artefacts caused by low light, and this is particularly useful in low end cameras such as mobile phones due to their small sensor size leading to poor performance in low light.
 
 
-For the Gaussian Blur implementation, I have used the built in implementations available in jimp and the image crate. These behave in a very similar way and so are suitable for comparison, and the same values are used for both implementation.
+For the Gaussian Blur implementation, I have used the built-in implementations available in jimp and the image crate. These behave in a very similar way and so are suitable for comparison, and the same values are used for both implementation.
+
+Below is an image before and after a Gaussian blur, for this comparison, the Gaussian blur has been done with a large sigma, resulting in a large blur to make it clear what the process is doing, however in denoising, this value will be much lower.
+
+
+\begin{minipage}[t]{0.5\textwidth}
+    \begin{figure}[H]
+        \includegraphics[width=7cm]{no_blur.png}
+        \caption{Before blur}
+    \end{figure}
+
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+    \begin{figure}[H]
+        \includegraphics[width=7cm]{blur.png}
+        \caption{After blur}
+    \end{figure}
+\end{minipage}
+
+
 
 \subsubsection{Brightness}
 
@@ -302,20 +320,30 @@ $$
 
 \subsection{Web Assembly optimizations}
 
-JavaScript comes with no options for optimizing performance, as it is run by the browser as JavaScript. However, as Rust is first compiled to assembly, it offers a range of ways to trade off between size and speed, and some methods that have the potential to improve both.
+JavaScript comes with no options for optimizing performance, as it is run by the browser as JavaScript. However, as Rust is first compiled to assembly, it offers a range of ways to trade off between size and speed, and some methods that have the potential to improve both. Each of the following methods can be used at the same time to provide further improvements.
 
-The first optimization is Link-time optimization (LTO), this takes the intermediate representation of the code, allowing the whole codebase to be optimized together, rather than optimizing each file individually. Doing this can help to improve both the size and performance of the code.
+\begin{enumerate}
+    \item Link Time Optimization
 
-The rust compiler then has an “opt-level”, which allows the user to specify how far they are willing to optimize size at the detriment of performance, this has two options, \texttt{s} and \texttt{z}, with z being the most optimized for size.
+          This takes the intermediate representation of the code, allowing the whole codebase to be optimized together, rather than optimizing each file individually. Doing this can help to improve both the size and performance of the code.
 
-Finally, there is the \texttt{wasm-opt} tool, which allows for optimizing a \texttt{.wasm} file after it has been created, to optimize for either speed or size. It provides the following options
+    \item Rust compiler opt-level
 
-\begin{itemize}
-    \item \texttt{-Os} : optimize for size
-    \item \texttt{-Oz} : optimize aggressively for size
-    \item \texttt{-O} : optimize for speed
-    \item \texttt{-O3} : optimize aggressively for speed
-\end{itemize}
+          This allows the user to specify how far they are willing to optimize size at the detriment of performance, this has two options, \texttt{s} and \texttt{z}, with z being the most optimized for size.
+
+    \item \texttt{wasm-opt}
+
+          This is a tool which allows for optimizing a \texttt{.wasm} file after it has been created, to optimize for either speed or size. It provides the following options:
+
+          \begin{itemize}
+              \item \texttt{-Os} : optimize for size
+              \item \texttt{-Oz} : optimize aggressively for size
+              \item \texttt{-O} : optimize for speed
+              \item \texttt{-O3} : optimize aggressively for speed
+          \end{itemize}
+
+\end{enumerate}
+
 
 \subsubsection{Results}
 
@@ -411,6 +439,8 @@ A full profiler hasn't been used here as there aren't widely used JavaScript pro
 
 In order to verify the testing setup was only measuring the algorithm, an experiment was done to test if there were any constants involved in the implementation of brightness. To do this, a 100 MP photo was used, and scaled down to increments of 10 MP between 10 and 80 MP. If there was no constant, the expected result would be for the y-axis intercept to be zero, otherwise the intercept will show what the constant is.
 
+% Image sourced from https://www.hasselblad.com/learn/sample-images/
+
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}
@@ -443,7 +473,7 @@ In order to verify the testing setup was only measuring the algorithm, an experi
 
 \end{figure}
 
-Extrapolating the results found to a resolution of 0 megapixels, it can be seen that the y axis intercept is very close to zero. This verifies that there isn't a significant constant included, and so that the results are more accurate.
+Extrapolating the results found to a resolution of 0 megapixels, it can be seen that the y-axis intercept is very close to zero. This verifies that there isn't a significant constant included, and so that the results are more accurate.
 
 
 To verify the results, they are compared against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either Web Assembly or JavaScript it is expected for this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
@@ -617,8 +647,6 @@ Rust has a big advantage in developer experience for having static types, meanin
 
 Both the JavaScript and Web Assembly options had significantly worse performance in comparison to the native code of imagemagick, with Web Assembly being $7.5 \times$ slower, which is in line with the results found in the related work section of this paper. There is still significant overhead to running code in websites, and the benefit of the flexibility has to outweigh it.
 
-% In addition, while results show that for complex algorithms, Web Assembly does offer a significant benefit over JavaScript, for simple algorithms, it's a trade-off between the two as to which is faster. This is likely due to the additional complexity involved in getting Web Assembly code running in browsers, compared to JavaScript which they have been built to run for many years.
-
 The results show that with Web Assembly, the contrast implementation is slower than both the JavaScript implementation and the Web Assembly implementation of brightness. This was surprising as both algorithms took the same time with JavaScript. On closer inspection of the source code of both libraries, while jimp (the JavaScript library) was using a contrast algorithm like described in the solution section, image (the Rust Crate), used a different algorithm for calculating contrast which was significantly less efficient.
 
 For the JavaScript implementation, the formula for the final $V'$ was
@@ -635,14 +663,43 @@ $$
 
 The Rust implementation has significantly more usage of both multiplication and division. Note that the \texttt{max} value is the maximum value a pixel's colour can be, so 255 for standard images. Whilst it is possible that this contrast calculation provides a more desired effect, it also causes the decrease in performance found in the results.
 
+However, on observation of the images, the effect seems to be extremely similar, I used a contrast of 20\%, which produces a noticeable difference compared to the original image, but the two images look extremely similar.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=7cm]{no_blur.png}
+    \caption{Original Image}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{js.png}
+    \caption{JavaScript implementation}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{wasm.png}
+    \caption{Web Assembly implementation}
+\end{figure}
+
+% Look at the images themselves
+
 While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
+
+% Discuss using native code
+
+\subsection{Self appraisal}
+
 
 
 \section{Conclusions}
 
 In this paper, we have demonstrated Web Assembly offering considerable performance improvements over JavaScript, with it being up to $8\times$ faster. However, we also demonstrated areas where Web Assembly is not suitable, such as when you have the option to run native code. We also evaluated what options to choose when compiling web assembly, finding that Link Time Optimization can provide an improvement both in performance and file size.
 
+\subsection{Further work}
+
 One new development that could help with image processing on the web is WebGPU \cite{webgpu}. This is a standard that allows for access of the GPU by both JavaScript and Web Assembly. Due to the nature of image processing algorithms in performing parallel operations, such as in JPEG where much of the computation is done on the $8\times 8$ blocks, each of these can be parallelized. As GPUs are designed for such operations, often having many more cores than a CPU, this could lead to a large improvement in performance.
+
+% Discuss other problems that could be interesting
 
 
 
