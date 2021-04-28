@@ -27,15 +27,20 @@
 
     \subsection{Aims}
 
-    To determine in which cases implementing algorithms in Web Assembly is the right choice to make
+    \textbf{Basic Aim}: Compare one complex algorithm
+
+    \textbf{Intermedia Aim}: Compare multiple complex algorithms
+
+    \textbf{Advanced Aim}: Look into tweaks that can be used to improve performance
 
     \subsection{Method}
 
-    Implement a range of image processing algorithms in both JavaScript and Web Assembly and measure using a variety of metrics.
+    Implement both high complexity and low complexity image processing algorithms in both JavaScript and Web Assembly, then look into if there is any possibility of optimization.
+    Then measure these algorithms to determine if there is a benefit to using Web Assembly.
 
     \subsection{Results}
 
-    An improvement of web assembly compared to JavaScript of over $8\times$ in some tasks, however demonstrating that some tasks and contexts are less suitable for the use of Web Assembly.
+    Web assembly can offer an improvement of over $8\times$ compared to JavaScript in some tasks. However, the implementation of the algorithm can often be more important than the language it's running in, and if it's possible to use neither Web Assembly nor JavaScript, then this is often the best choice.
 
     \subsection{Conclusions}
 
@@ -50,11 +55,11 @@
 
 \section{Introduction}
 
-Image processing is a widely used technique for a range of problems. In most modern cameras there will be some aspect of image processing at the time of capture, whether it is enhancements to the image or just the formatting to a file type, such as JPEG. After capture there is often additional image processing, be it applying filters or compression for upload online. Sophisticated image processing techniques don't just have benefit for the sharing of photos, but are also used medically, such as for processing CT images \cite{zhang2017applications}.
+Image processing is a widely used technique for a range of problems. In most modern cameras there will be some aspect of image processing at the time of capture, whether it is enhancements to the image or an image codec, such as JPEG. After capture there is often additional image processing, be it applying filters or compression for upload online. Sophisticated image processing techniques don't just have benefit for the sharing of photos, but are also used medically, such as for processing CT images \cite{zhang2017applications}.
 
 The performance of image processing was greatly improved with the introduction of Digital Signal Processors (DSP), these are specialized chips for performing signal processing tasks, such as the discrete cosine transform. In mobile devices these are now often integrated into the System on a Chip (SOC) \cite{angoletta2008digital}, however with the increase in computational performance since DSPs were introduced, these algorithms can also be run on the main processor.
 
-Traditionally image processing has been done in applications like Adobe Photoshop, however as browser market share is increasing web based photo editors are becoming more common. In a study by Forrester Consulting, workers are spending 1/3 of the work day on average in a web browser, so it is an area many companies are targeting to launch new products \cite{cloud_worker}.
+Traditionally image processing has been done in applications like Adobe Photoshop, however as the amount of time people spend in browsers is increasing web based photo editors are becoming more common. In a study by Forrester Consulting, workers are spending 1/3 of the work day on average in a web browser, so it is an area many companies are targeting to launch new products \cite{cloud_worker}.
 
 % Look more into is it a good idea, not just if it's used
 
@@ -64,18 +69,21 @@ Web Assembly is a compilation target for languages that support it, meaning that
 
 % More how web assembly works here
 
-Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript along with benefits such as type safety using static types, where JavaScript uses dynamic types. TypeScript works to try and solve this problem, but is just a transpiler to JavaScript, where Web Assembly allows for type checking at runtime.
+Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript. There are also additional benefits depending on what language is chosen, such as static types, which can allow for easier debugging. JavaScript offers this through TypeScript, but as it is an additional feature, it isn't as prevalent as a language that offers it natively.
 
-When it comes to producing a web application, the computation can be run on either the client (web browser) or the server, each coming with advantages and disadvantages. Running code on the server allows for the site to be performant on low power devices such as mobile phones, however by running code on the client you don't need to send data between the client and server on every interaction. This allows the site to continue being ran during times of intermittent connection and reduces the latency of operations. Running code on the client also allows for the site to be turned into a progressive web app, which only need to be connected to the internet once for installation similarly to an app \cite{biorn2017progressive}.
+When it comes to producing a web application, the computation can be run on either the client (web browser) or the server, each coming with advantages and disadvantages. Running code on the server allows for the site to be performant on low power devices such as mobile phones, however by running code on the client it isn't required to to send data between the client and server on every interaction. This allows the site to continue being ran during times of intermittent connection and reduces the latency of operations. Running code on the client also allows for the site to be turned into a progressive web app, which only need to be connected to the internet once for installation similarly to an app \cite{biorn2017progressive}.
+
+
+\subsection{Research Question}
+
+The Research question is to find in which cases Web Assembly offers a benefit over JavaScript, finding this out by implementing image processing algorithms using both mechanisms.
 
 \subsection{Objectives}
 
 This project will implement a range of image processing algorithms in both Web Assembly and JavaScript and compare their performance.
 
 
-\subsection{Research Question}
 
-The Research question is to find in which cases Web Assembly offers a benefit over JavaScript, finding this out by implementing image processing algorithms using both mechanisms.
 
 
 \section{Related Work}
@@ -84,7 +92,7 @@ The Research question is to find in which cases Web Assembly offers a benefit ov
 
 Web Assembly is compatible with any language that compiles to assembly, meaning there is a large range of languages to choose from. However, as Web Assembly doesn't currently have a garbage collector, it is most efficient to choose a language that doesn't do garbage collection, such as C \cite{haas2017bringing}. Alongside C, Rust is another language that doesn't have garbage collection and advertises itself as good to use for Web Assembly.
 
-One advantage of Rust is that it has a large ecosystem of packages to help with the production of Web Assembly code. One such library is wasm-bindgen which allows for binding functions and other features in Rust to the JavaScript produced, allowing for multiple functions to be included in one Web Assembly file \cite{wasmbindgen}. It also provides availability for using native browser functions, such as \texttt{window.alert}, within your Rust functions. Another is wasm-pack which creates a JavaScript library containing the generated Web Assembly code, making it easier to use in code and publish.
+One advantage of Rust is that it has a large ecosystem of packages to help with the production of Web Assembly code. One such library is wasm-bindgen which allows for binding functions and other features in Rust to the JavaScript produced, allowing for multiple functions to be included in one Web Assembly file \cite{wasmbindgen}. It also provides availability for using native browser functions, such as \texttt{window.alert}, within Rust functions. Another is wasm-pack which creates a JavaScript library containing the generated Web Assembly code, making it easier to integrate into a web application.
 
 % Might need to discuss what garbage collection is
 % Garbage collection in WASM https://github.com/WebAssembly/proposals/issues/16
@@ -93,6 +101,10 @@ One advantage of Rust is that it has a large ecosystem of packages to help with 
 \subsection{History of Rust}
 
 % Discuss a bit what Rust is solving etc
+
+The Rust language came from a project by an employee of the Mozilla foundation and was supported by Mozilla and their employees. Since then, the ownership has been transferred to the Rust foundation in order to become more run by the community \cite{rustfoundation}. The intention of Rust is to offer a new alternative to C++, a language that first appeared in 1985, and so over this time has developed a range of legacy issues caused by having to not cause large changes that would require existing code to be changed.
+
+
 
 \subsection{Important metrics}
 
@@ -110,7 +122,7 @@ Making these results actionable, Google introduced Core Web Vitals, which are me
 
 \subsection{Web Assembly Image Processing in use}
 
-Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly, this approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB from a total installed size of 96.5 MB \cite{nextjs}. As this was replacing a package with code in the project, it led to a large increase in the amount of code to maintain, but this could be abstracted to a package. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
+Squoosh by Google Chrome is a tool to compress images and implements many of its codecs using Web Assembly. This approach was also adopted by Next.js for their image component to improve performance, reducing the installed size by 27.3 MB from a total installed size of 96.5 MB \cite{nextjs}. As this was replacing a package with code in the project, it led to a large increase in the amount of code to maintain, but this could be abstracted to a package. One example of such a package is \texttt{photon} which provides abstractions on top of the \texttt{image} Rust library \cite{photon}.
 
 % Total installed size from https://nextjs.org/blog/next-10-1
 
@@ -123,7 +135,7 @@ Alongside image processing, Web Assembly is also used for a range of other purpo
 Another implementation of Web Assembly is in determining the quality of DNA sequencing data, as used by fastq.bio \cite{fastq}. In this implementation they achieved a $9\times $ performance improvement, managing to increase that to $21 \times$ with some additional optimizations such as using a single function call.
 
 
-However, when running code natively, Web Assembly may not be the best solution. A JavaScript bundler is a program which creates large files from the smaller JavaScript files needed for a web application, this is useful as better performance can be achieved by sending a few large files compared to lots of smaller files. The author of a native JavaScript bundler observed that there was a 10$\times$ speed improvement by running it natively, compared to using Web Assembly \cite{esbuild}.
+However, when running code natively, Web Assembly may not be the best solution. A JavaScript bundler is a program which creates large files from the smaller JavaScript files needed for a web application; this is useful as better performance can be achieved by sending a few large files compared to lots of smaller files. The author of a native JavaScript bundler observed that there was a 10$\times$ speed improvement by running it natively, compared to using Web Assembly \cite{esbuild}.
 
 This behaviour was also observed in \cite{jangda2019not}, where peak slowdowns were observed of 2.5$\times$ in Google Chrome compared to the native code. These benchmarks are taken from SPEC CPU2006 and SPEC CPU2017. A sample of these results are shown in Table \ref{native}.
 \begin{table}[H]
@@ -170,7 +182,7 @@ This shows native libraries being significantly faster than the solution in pure
 
 \subsection{Image formats}
 
-There are a range of image formats in use, and the encoding and decoding of images is a computationally intensive task. The Web Almanac studies over 7 million websites and found that 40.26\% of images are of the jpg image format and 26.90\% in png \cite{webalmanac}. JPEG is a high performance image codec with a study by Cloudinary showing to to have an encoding speed of 49 MP/s and a decoding speed of 108 MP/s \cite{cloudinary}. JPEG has both lossless and lossy versions, and in a study of lossless compression of 382 images, these results are shown in Table \ref{speedratio} \cite{ukrit2011survey}.
+There are a range of image formats in use, and the encoding and decoding of images is a computationally intensive task. The Web Almanac studies over 7 million websites and found that 40.26\% of images are of the jpg image format and 26.90\% in png \cite{webalmanac}. JPEG is a high performance image codec with a study by Cloudinary showing JPEG to have an encoding speed of 49 MP/s and a decoding speed of 108 MP/s \cite{cloudinary}. JPEG has both lossless and lossy versions, and in a study of lossless compression of 382 images, these results are shown in Table \ref{speedratio} \cite{ukrit2011survey}.
 
 % Add more details of what hardware this was one
 % Don't include numbers if you don't have comparison
@@ -207,15 +219,16 @@ Web Assembly can run in a wide variety of places, there are the different browse
     \caption{Browser Market Share}
 
 \end{figure}
-While the browser itself is important, the JavaScript engine is what will impact the results. This is the computer program responsible for executing JavaScript and Web Assembly code. The JavaScript engine inside Google Chrome is called V8, and is open source, allowing for other projects to use it. One such project is Node.js which allows for running JavaScript from the command line. This has become incredibly popular for the construction of web backends, with over 78,000 stars on GitHub. The benefit of using this over a browser is that the metrics will still be transferable to browsers, and allows me to reduce the number of external factors that impact the computation. An example of this is that a browser will manage the resources available to each of its tabs, meaning that having more tabs open could affect the result, whereas the resources of Node.js are managed by the operating system. This also makes it easier to collect metrics such as memory usage and timing and the process runs as a system process.
+While the browser itself is important, the JavaScript engine is what will impact the results. This is the computer program responsible for executing JavaScript and Web Assembly code. The JavaScript engine inside Google Chrome is called V8, and is open source, allowing for other projects to use it. One such project is Node.js which allows for running JavaScript from the command line. This has become incredibly popular for the construction of web backends, with over 78,000 stars on GitHub. The benefit of using this over a browser is that the metrics will still be transferable to browsers, and allows for reducing the number of external factors that impact the computation. An example of this is that a browser will manage the resources available to each of its tabs, meaning that having more tabs open could affect the result, whereas the resources of Node.js are managed by the operating system. This also makes it easier to collect metrics such as memory usage and timing and the process runs as a system process.
 
 \subsection{Use of existing libraries}
 
 In order to speed up the development of areas whose performance I'm not measuring, I use existing image processing libraries to do some of the work. For example in decoding a provided image into the simple r,g,b values so that I can then run an encoder on them.
 
-For Rust these libraries are referred to as “crates” and for JavaScript these are provided as npm libraries. Rust is both a newer language, and less popular than JavaScript, meaning that it has a smaller range of available libraries, so when it came to choosing a crate, I only really had one choice, the \texttt{image} crate.
+For Rust these libraries are referred to as “crates” and for JavaScript these are provided as npm libraries. Rust is both a newer language, and less widely used than JavaScript, meaning that it has a smaller range of available libraries, so when it came to choosing a crate, there was only one major option, the \texttt{image} crate.
 
-With JavaScript there is more choice, allowing me to choose the one that had the features I wanted, I settled on Jimp as it has a wide range of features and is very popular.
+With JavaScript there is more choice, allowing for choosing based on the desired features. Jimp is being used for this experiment as it has a wide range of features and is very popular.
+
 
 % Be more specific about what the image processing libraries are doing
 
@@ -232,30 +245,29 @@ When editing photos, the operation that tends to take the most time is exporting
 
 % Maybe a process diagram in here
 
-For both implementations, I started with prewritten code to decode an image into a long string of r,g,b,a values and the width and height of the image. The first step is the transformation of the image from the r,g,b colour space into the YCbCr colour space. Doing this is the simple task of calculating fractions based on the r,g and b values, so is not especially intensive.
+Both implementation use prewitten code to decode an image into a long string of r,g,b,a values and the width and height of the image. The first step is the transformation of the image from the r,g,b colour space into the YCbCr colour space. Doing this is the simple task of calculating fractions based on the r,g and b values, so is not especially intensive.
 
 Next is downsampling; this isn't required by the JPEG standard, but can be used to further reduce image size. This reduces the resolution of the Cb and Cr components. It is done on these components as brightness (Y) is much more noticeable to the human eye compared to the other components, meaning the resolution can be reduced without a noticeable decrease in quality. To do this, each $2\times 2$ pixel area is averaged to a single pixel. On the borders where it isn't possible to get this area, the average is just calculated based on the available pixels.
 
-For the next part of the algorithm, each component is split into $8\times 8$ blocks. This exhibits the same problem as the previous step as at the edges a full $8\times 8$ block may not be possible. My implementation solves this by replacing the pixels with black, however other implementations may use an average of the existing pixels to ensure there is less influence on the image.
+For the next part of the algorithm, each component is split into $8\times 8$ blocks. This exhibits the same problem as the previous step as at the edges a full $8\times 8$ block may not be possible. The implementation created solves this by replacing the pixels with black, however other implementations may use an average of the existing pixels to ensure there is less influence on the image.
 
 The next step, the discrete cosine transform, is the most intensive step of the whole algorithm. The simplest way to implement this is to multiply each $8\times 8$ matrix by another $8\times 8$ matrix. For each entry in the resulting matrix there will be $8$ multiplications. In my implementation I use the naive implementation of Matrix multiplication, giving $8^3 = 512$ multiplications in total per block. There is an opportunity to improve the number of multiplications required here using Strassen's algorithm, which would use $8^{\log_2(7)}=343$ multiplications \cite{strassen1969gaussian}. However, it has been found that this algorithm is only better than the naive method for large matrices, and so on an $8\times 8$ matrix, the naive algorithm has better performance \cite{huang2016strassen}.
 
 
 The next step is quantization, this is a lossy operation to keep only the lower frequency data as the human eye struggles to distinguish the strength of high frequency brightness variation. In order to apply quantization, for each element in the matrix, it is divided by the value in the same position of a quantization matrix and rounded. JPEG has a variety of quantization matrices, allowing for the user to specify their desired quality, with the matrices having lower values for higher qualities. Implementing the quantization matrix will lead to many of the elements being zero, allowing for easier encoding.
 
-This encoding begins with run length encoding, intended for allowing for the encoding of runs of zeroes. This algorithm uses “zigzag encoding” in which the order in which the elements are processed is defined by a zigzag pattern, shown in the image below, taken from \cite{jpeg}.
-
+This encoding begins with run length encoding, intended for allowing for the encoding of runs of zeroes. This algorithm uses “zigzag encoding” in which the order in which the elements are processed is defined by a zigzag pattern, shown below.
 \begin{figure}[H]
     \centering
     \includegraphics{zigzag.png}
-    \caption{Zigzag order}
+    \caption{Zigzag order \protect\cite{jpeg}}
 \end{figure}
 
 This then forms a sequence of values, ideally with many zeros at the end. As the length is something that is already known, the encoding can stop when the rest of the sequence is just zeroes. The most common encoding to use for this is Huffman, however the specification does allow for using arithmetic coding.
 
 \subsubsection{Writing to the file}
 
-The remainder of the algorithm involves correctly writing the data to a file. For this the source code for the JPEG encoders in the libraries discussed previously used, as this work isn't computationally intensive, but requires a lot of detail in order to ensure it is done correctly.
+The remainder of the algorithm involves correctly writing the data to a file. For this the source code for the JPEG encoders in the libraries discussed previously is being used, as this work isn't computationally intensive, but requires a lot of detail in order to ensure it is done correctly.
 
 \subsection{Library provided functions}
 
@@ -700,6 +712,9 @@ In this paper, we have demonstrated Web Assembly offering considerable performan
 One new development that could help with image processing on the web is WebGPU \cite{webgpu}. This is a standard that allows for access of the GPU by both JavaScript and Web Assembly. Due to the nature of image processing algorithms in performing parallel operations, such as in JPEG where much of the computation is done on the $8\times 8$ blocks, each of these can be parallelized. As GPUs are designed for such operations, often having many more cores than a CPU, this could lead to a large improvement in performance.
 
 % Discuss other problems that could be interesting
+
+This work could also be developed by evaluating methods outside of image processing. Looking at more basic algorithms like sorting and searching may help to reveal underlying reasons why Web Assembly is faster or expose cases where JavaScript is faster.
+It may also be interesting to use multiple languages for Web Assembly to see if this benefit is restricted to Rust, or if it applies to all languages.
 
 
 
