@@ -336,6 +336,8 @@ $$
     V'=F(V-128)+128
 $$
 
+This has the impact that if the pixel value is under 128, then the new value will be reduced, however if it is over 128, then it will be increased. This follows with the intuition of contrast in that the darks should be made darker and the lights lighter.
+
 \subsection{Web Assembly optimizations}
 
 JavaScript comes with no options for optimizing performance, as it is run by the browser as JavaScript. However, as Rust is first compiled to assembly, it offers a range of ways to trade off between size and speed, and some methods that have the potential to improve both. Each of the following methods can be used at the same time to provide further improvements.
@@ -691,7 +693,7 @@ Note here that the JavaScript takes in the decimal version of the contrast (e.g.
 
 The Rust implementation has significantly more usage of both multiplication and division. Note that the \texttt{max} value is the maximum value a pixel's colour can be, so 255 for standard images. Whilst it is possible that this contrast calculation provides a more desired effect, it also causes the decrease in performance found in the results.
 
-However, on observation of the images, the effect seems to be extremely similar, A contrast of 20\% has been used, which produces a noticeable difference compared to the original image, but the two images look extremely similar.
+However, on observation of the images, the effect seems to be extremely similar, A contrast of 20\% has been used, which produces a noticeable difference compared to the original image, but the two output images look extremely similar.
 
 \begin{figure}[H]
     \centering
