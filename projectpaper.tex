@@ -68,7 +68,7 @@ In 1995 JavaScript was introduced as a method for introducing interactivity to w
 
 Web Assembly is a compilation target for languages that support it, meaning that you take the code in the language of your choice and compile it into a \texttt{.wasm} file. This file can then be called using JavaScript to make it behave like a standard JavaScript library.
 
-% More how web assembly works here
+% More how Web Assembly works here
 
 Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript. There are also additional benefits depending on what language is chosen, such as static types, which can allow for easier debugging. JavaScript offers this through TypeScript, but as it is an additional feature, it isn't as prevalent as a language that offers it natively.
 
@@ -81,14 +81,7 @@ The Research question is to find in which cases Web Assembly offers a benefit ov
 
 \subsection{Objectives}
 
-\textbf{Basic Aim}: Compare one complex algorithm
-
-\textbf{Intermedia Aim}: Compare multiple complex algorithms
-
-\textbf{Advanced Aim}: Look into tweaks that can be used to improve performance
-
-
-
+The basic aim is compare the performance of one complex algorithm between Web Assembly and JPEG, for a complex algorithm, it should not simply loop over the pixels of the image, and instead be performing more sophisticated techniques. The intermediate aim is to extend this to multiple complex algorithms. The advanced aim is to look into tweaks that can be used to improve performance, such as compile time optimizations for Web Assembly.
 
 
 \section{Related Work}
@@ -236,7 +229,7 @@ While the browser itself is important, the JavaScript engine is what will impact
 
 \subsection{Use of existing libraries}
 
-In order to speed up the development of areas whose performance I'm not measuring, I use existing image processing libraries to do some of the work. For example in decoding a provided image into the simple r,g,b values so that I can then run an encoder on them.
+In order to speed up the development of areas whose performance I'm not measuring, existing image processing libraries are used to do some of the work. For example in decoding a provided image into the simple r,g,b values so that the encoder can then be run on them.
 
 For Rust these libraries are referred to as “crates” and for JavaScript these are provided as npm libraries. Rust is both a newer language, and less widely used than JavaScript, meaning that it has a smaller range of available libraries, so when it came to choosing a crate, there was only one major option, the \texttt{image} crate.
 
@@ -252,7 +245,7 @@ With JavaScript there is more choice, allowing for choosing based on the desired
 
 There is a wide range of algorithms to choose from when it comes to image processing. The algorithms have been chosen to ensure they cover a wide range of performance characteristics. Some of the algorithms require a large amount of processing and are expected to take over a second, whereas others just manipulate each pixel in turn and so are expected to complete much faster. This is to provide a full picture of if there is a certain type of algorithm that benefits from one of the two approaches.
 
-When editing photos, the operation that tends to take the most time is exporting the images to JPEG, so I decided to explore implementing the JPEG algorithm \cite{jpeg}.
+When editing photos, the operation that tends to take the most time is exporting the images to JPEG, so the main algorithm chosen is the JPEG algorithm \cite{jpeg}.
 
 \subsection{Implementation of JPEG}
 
@@ -264,7 +257,7 @@ Next is downsampling; this isn't required by the JPEG standard, but can be used 
 
 For the next part of the algorithm, each component is split into $8\times 8$ blocks. This exhibits the same problem as the previous step as at the edges a full $8\times 8$ block may not be possible. The implementation created solves this by replacing the pixels with black, however other implementations may use an average of the existing pixels to ensure there is less influence on the image.
 
-The next step, the discrete cosine transform, is the most intensive step of the whole algorithm. The simplest way to implement this is to multiply each $8\times 8$ matrix by another $8\times 8$ matrix. For each entry in the resulting matrix there will be $8$ multiplications. In my implementation I use the naive implementation of Matrix multiplication, giving $8^3 = 512$ multiplications in total per block. There is an opportunity to improve the number of multiplications required here using Strassen's algorithm, which would use $8^{\log_2(7)}=343$ multiplications \cite{strassen1969gaussian}. However, it has been found that this algorithm is only better than the naive method for large matrices, and so on an $8\times 8$ matrix, the naive algorithm has better performance \cite{huang2016strassen}.
+The next step, the discrete cosine transform, is the most intensive step of the whole algorithm. The simplest way to implement this is to multiply each $8\times 8$ matrix by another $8\times 8$ matrix. For each entry in the resulting matrix there will be $8$ multiplications. In this implementation the naive implementation of Matrix multiplication is used, giving $8^3 = 512$ multiplications in total per block. There is an opportunity to improve the number of multiplications required here using Strassen's algorithm, which would use $8^{\log_2(7)}=343$ multiplications \cite{strassen1969gaussian}. However, it has been found that this algorithm is only better than the naive method for large matrices, and so on an $8\times 8$ matrix, the naive algorithm has better performance \cite{huang2016strassen}.
 
 
 The next step is quantization, this is a lossy operation to keep only the lower frequency data as the human eye struggles to distinguish the strength of high frequency brightness variation. In order to apply quantization, for each element in the matrix, it is divided by the value in the same position of a quantization matrix and rounded. JPEG has a variety of quantization matrices, allowing for the user to specify their desired quality, with the matrices having lower values for higher qualities. Implementing the quantization matrix will lead to many of the elements being zero, allowing for easier encoding.
@@ -284,14 +277,14 @@ The remainder of the algorithm involves correctly writing the data to a file. Fo
 
 \subsection{Library provided functions}
 
-As both libraries provide algorithms for Gaussian Blur, Brightness and Contrast, they have been used for the testing, rather than writing the algorithms myself.
+As both libraries provide algorithms for Gaussian Blur, Brightness and Contrast, they have been used for the testing, rather than writing the algorithms again.
 
 \subsubsection{Gaussian Blur}
 
 Gaussian blur has a wide variety of applications, but is particularly useful for image denoising. The blurring effect helps to reduce noise artefacts caused by low light, and this is particularly useful in low end cameras such as mobile phones due to their small sensor size leading to poor performance in low light.
 
 
-For the Gaussian Blur implementation, I have used the built-in implementations available in jimp and the image crate. These behave in a very similar way and so are suitable for comparison, and the same values are used for both implementation.
+For the Gaussian Blur implementation, the built-in implementations available in jimp and the image crate have been used. These behave in a very similar way and so are suitable for comparison, and the same values are used for both implementation.
 
 Below is an image before and after a Gaussian blur, for this comparison, the Gaussian blur has been done with a large sigma, resulting in a large blur to make it clear what the process is doing, however in denoising, this value will be much lower.
 
@@ -458,7 +451,7 @@ The first evaluation is to determine the running time of the algorithm. The for 
 
 Memory usage is also an important metric, especially on mobile devices that might have small amounts of memory. This can be measured using the \texttt{/usr/bin/time} command on Linux devices, which measures both the time taken and memory usage of a command. This metric is less accurate than the timing evaluation already discussed as it measures the memory usage of the whole command, rather than just of the JPEG conversion. To try and counteract this difference, the code outside the JPEG conversion is kept as similar as possible to ensure it has the same memory consumption.
 
-In order to improve the accuracy of the calculations of the Web Assembly implementation, I have used the \texttt{web\_sys} crate which allows me to run \texttt{console.time} inside my rust code. This displayed a discrepancy of around 100ms between the internal and external time, which is insignificant on some of the longer running programs, but is useful for the shorter running programs.
+In order to improve the accuracy of the calculations of the Web Assembly implementation, the \texttt{web\_sys} crate has been used, which allows for running \texttt{console.time} inside Rust code.This displayed a discrepancy of around 100ms between the internal and external time, which is insignificant on some of the longer running programs, but can lead to significant discrepancy for the shorter running programs.
 
 A full profiler hasn't been used here as there aren't widely used JavaScript profilers that evaluate at the level of how long each function takes. Instead, they focus on things such as response time and CPU utilization of the overall program, which doesn't deliver the results I'd look for.
 
@@ -503,7 +496,7 @@ In order to verify the testing setup was only measuring the algorithm, an experi
 Extrapolating the results found to a resolution of 0 megapixels, it can be seen that the y-axis intercept is very close to zero. This verifies that there isn't a significant constant included, and so that the results are more accurate.
 
 
-To verify the results, they are compared against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either Web Assembly or JavaScript it is expected for this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure my implementations in the same way for verification.
+To verify the results, they are compared against a basic conversion using imagemagick, this is a popular command line tool for converting between image formats. Due to this not having the overhead of either Web Assembly or JavaScript it is expected for this to be faster than both implementations, but it allows for getting a rough idea of how long the algorithm should take. As this command does both the decoding from one format and the encoding to another, it is required to also measure the implementations produced in the same way for verification.
 
 \subsection{Stages of the life cycle undertaken}
 
@@ -676,9 +669,9 @@ Being able to easily package up Web Assembly using a tool like \texttt{wasm-pack
 
 Both the JavaScript and Web Assembly options had significantly worse performance in comparison to the native code of imagemagick, with Web Assembly being $7.5 \times$ slower, which is in line with the results found in the related work section of this paper. There is still significant overhead to running code in websites, and the benefit of the flexibility has to outweigh it.
 
-While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
+While the benefits of static types have been discussed in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
 
-JavaScript also has the benefit of being able to write your entire codebase in one language, rather than having to separate out into a different language for some tasks. This approach has already gained popularity through the use of Node.js for a backend, allowing for the use of JavaScript there as well as in the frontend. It also reduces the complexity of the build step for the application, as it would be required to build each piece of web assembly, before finally bundling everything together to publish on the web. These disadvantages particularly take place in small tasks such as adjusting the brightness where all the effort of converting to Web Assembly saves 25ms.
+JavaScript also has the benefit of being able to write your entire codebase in one language, rather than having to separate out into a different language for some tasks. This approach has already gained popularity through the use of Node.js for a backend, allowing for the use of JavaScript there as well as in the frontend. It also reduces the complexity of the build step for the application, as it would be required to build each piece of Web Assembly, before finally bundling everything together to publish on the web. These disadvantages particularly take place in small tasks such as adjusting the brightness where all the effort of converting to Web Assembly saves 25ms.
 
 The results show that with Web Assembly, the contrast implementation is slower than both the JavaScript implementation and the Web Assembly implementation of brightness. This was surprising as both algorithms took the same time with JavaScript. On closer inspection of the source code of both libraries, while jimp (the JavaScript library) was using a contrast algorithm like described in the solution section, image (the Rust Crate), used a different algorithm for calculating contrast which was significantly less efficient.
 
@@ -698,7 +691,7 @@ Note here that the JavaScript takes in the decimal version of the contrast (e.g.
 
 The Rust implementation has significantly more usage of both multiplication and division. Note that the \texttt{max} value is the maximum value a pixel's colour can be, so 255 for standard images. Whilst it is possible that this contrast calculation provides a more desired effect, it also causes the decrease in performance found in the results.
 
-However, on observation of the images, the effect seems to be extremely similar, I used a contrast of 20\%, which produces a noticeable difference compared to the original image, but the two images look extremely similar.
+However, on observation of the images, the effect seems to be extremely similar, A contrast of 20\% has been used, which produces a noticeable difference compared to the original image, but the two images look extremely similar.
 
 \begin{figure}[H]
     \centering
@@ -723,14 +716,14 @@ However, on observation of the images, the effect seems to be extremely similar,
 
 The decision to use Rust for this project was a good choice, providing a range of tools that made the development process easier, such as \texttt{wasm-pack}. However, it may also have been a good experience using C or C++ due to their age in that they would have more algorithm examples and more complete libraries.
 
-The functions chosen provided the expected results, making them useful in proving my hypothesis, however it would have been good to be able to find an algorithm for which JavaScript was faster than Web Assembly. This may lie outside the realm of image processing algorithms, requiring a different approach entirely, or may have occurred when implementing the same algorithms in different ways, such as comparing iterative and recursive methods.
+The functions chosen provided the expected results, making them useful in proving the hypothesis, however it would have been good to be able to find an algorithm for which JavaScript was faster than Web Assembly. This may lie outside the realm of image processing algorithms, requiring a different approach entirely, or may have occurred when implementing the same algorithms in different ways, such as comparing iterative and recursive methods.
 
 
 
 
 \section{Conclusions}
 
-In this paper, we have demonstrated Web Assembly offering considerable performance improvements over JavaScript, with it being up to $8\times$ faster. However, we also demonstrated areas where Web Assembly is not suitable, such as when you have the option to run native code. We also evaluated what options to choose when compiling web assembly, finding that Link Time Optimization can provide an improvement both in performance and file size.
+In this paper, we have demonstrated Web Assembly offering considerable performance improvements over JavaScript, with it being up to $8\times$ faster. However, we also demonstrated areas where Web Assembly is not suitable, such as when you have the option to run native code. We also evaluated what options to choose when compiling Web Assembly, finding that Link Time Optimization can provide an improvement both in performance and file size.
 
 \subsection{Further work}
 
