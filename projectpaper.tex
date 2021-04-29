@@ -7,6 +7,7 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{pgf-pie}
+\usepackage{csquotes}
 \citationmode{abbr}
 \bibliographystyle{agsm}
 \title{Image Processing using JavaScript and Web Assembly}
@@ -71,7 +72,7 @@ Web Assembly is a compilation target for languages that support it, meaning that
 
 Using Web Assembly over JavaScript proposes advantages such as being able to use your existing codebase, rather than having to translate it into JavaScript. There are also additional benefits depending on what language is chosen, such as static types, which can allow for easier debugging. JavaScript offers this through TypeScript, but as it is an additional feature, it isn't as prevalent as a language that offers it natively.
 
-When it comes to producing a web application, the computation can be run on either the client (web browser) or the server, each coming with advantages and disadvantages. Running code on the server allows for the site to be performant on low power devices such as mobile phones, however by running code on the client it isn't required to to send data between the client and server on every interaction. This allows the site to continue being ran during times of intermittent connection and reduces the latency of operations. Running code on the client also allows for the site to be turned into a progressive web app, which only need to be connected to the internet once for installation similarly to an app \cite{biorn2017progressive}.
+When it comes to producing a web application, the computation can be run on either the client (web browser) or the server, each coming with advantages and disadvantages. Running code on the server allows for the site to be performant on low power devices such as mobile phones, however by running code on the client it isn't required to send data between the client and server on every interaction. This allows the site to continue being ran during times of intermittent connection and reduces the latency of operations. Running code on the client also allows for the site to be turned into a progressive web app, which only need to be connected to the internet once for installation similarly to an app \cite{biorn2017progressive}.
 
 
 \subsection{Research Question}
@@ -94,11 +95,11 @@ The Research question is to find in which cases Web Assembly offers a benefit ov
 
 \subsection{Language options for Web Assembly}
 
-Web Assembly is compatible with any language that compiles to assembly, meaning there is a large range of languages to choose from. However, as Web Assembly doesn't currently have a garbage collector, it is most efficient to choose a language that doesn't do garbage collection, such as C \cite{haas2017bringing}. Alongside C, Rust is another language that doesn't have garbage collection and advertises itself as good to use for Web Assembly.
+
+Web Assembly is compatible with any language that compiles to assembly, meaning there is a large range of languages to choose from. However, as Web Assembly doesn't currently have a garbage collector, it is most efficient to choose a language that doesn't do garbage collection, such as C \cite{haas2017bringing}. Garbage collection is the process of reclaiming memory that is no longer in use by the program, this helps to reduce the memory impact of a program. Alongside C, Rust is another language that doesn't have garbage collection and advertises itself as good to use for Web Assembly.
 
 One advantage of Rust is that it has a large ecosystem of packages to help with the production of Web Assembly code. One such library is wasm-bindgen which allows for binding functions and other features in Rust to the JavaScript produced, allowing for multiple functions to be included in one Web Assembly file \cite{wasmbindgen}. It also provides availability for using native browser functions, such as \texttt{window.alert}, within Rust functions. Another is wasm-pack which creates a JavaScript library containing the generated Web Assembly code, making it easier to integrate into a web application.
 
-% Might need to discuss what garbage collection is
 % Garbage collection in WASM https://github.com/WebAssembly/proposals/issues/16
 % WASM-bindgen
 
@@ -118,6 +119,14 @@ There are a range of metrics that are important when evaluating the performance 
     \item 1.0 seconds is the limit for the user's flow of thought to remain uninterrupted
     \item 10 seconds is the limit for keeping the user's attention.
 \end{itemize}
+
+While this paper was written many years ago, the results are still regarded as correct with current computer systems, with the author writing an update in 2014 that:
+
+\begin{displayquote}
+    These guidelines have been the same for 46 years now, so they are also not likely to change with whatever implementation technology comes next. \cite{responsetimes}
+\end{displayquote}
+
+This is because the measurements were made based on human psychology, rather than with interaction of a specific computer, allowing the results to remain applicable through the years.
 
 Making these results actionable, Google introduced Core Web Vitals, which are metrics about how fast a page loads to determine how well it performs \cite{webvitals}. One such metric is Largest Contentful Paint, which measures the time taken for most of the page to be loaded in, and suggests that it should occur within 2.5 seconds to be classified as “Good”.
 
@@ -669,6 +678,8 @@ Both the JavaScript and Web Assembly options had significantly worse performance
 
 While I did discuss the benefits of static types in the strengths section, this also comes with its downsides in that it makes code much more verbose when having to include types for everything, and requires additional thinking to ensure everything has the correct type. JavaScript also has a much wider range of built-in functions which came in useful when creating the algorithm, such as the \texttt{map} function which condensed the size of the matrix multiplication code.
 
+JavaScript also has the benefit of being able to write your entire codebase in one language, rather than having to separate out into a different language for some tasks. This approach has already gained popularity through the use of Node.js for a backend, allowing for the use of JavaScript there as well as in the frontend. It also reduces the complexity of the build step for the application, as it would be required to build each piece of web assembly, before finally bundling everything together to publish on the web. These disadvantages particularly take place in small tasks such as adjusting the brightness where all the effort of converting to Web Assembly saves 25ms.
+
 The results show that with Web Assembly, the contrast implementation is slower than both the JavaScript implementation and the Web Assembly implementation of brightness. This was surprising as both algorithms took the same time with JavaScript. On closer inspection of the source code of both libraries, while jimp (the JavaScript library) was using a contrast algorithm like described in the solution section, image (the Rust Crate), used a different algorithm for calculating contrast which was significantly less efficient.
 
 For the JavaScript implementation, the formula for the final $V'$ was
@@ -706,7 +717,7 @@ However, on observation of the images, the effect seems to be extremely similar,
 \end{figure}
 
 
-JavaScript also has the benefit of being able to write your entire codebase in one language, rather than having to separate out into a different language for some tasks. This approach has already gained popularity through the use of Node.js for a backend, allowing for the use of JavaScript there as well as in the frontend. It also reduces the complexity of the build step for the application, as it would be required to build each piece of web assembly, before finally bundling everything together to publish on the web. These disadvantages particularly take place in small tasks such as adjusting the brightness where all the effort of converting to Web Assembly saves 25ms.
+
 
 \subsection{Self appraisal}
 
@@ -731,7 +742,6 @@ This work could also be developed by evaluating methods outside of image process
 It may also be interesting to use multiple languages for Web Assembly to see if this benefit is restricted to Rust, or if it applies to all languages.
 
 
-\newpage
 \bibliography{projectpaper}
 
 
