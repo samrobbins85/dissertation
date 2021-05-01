@@ -1,5 +1,10 @@
 \documentclass{beamer}
-
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgf-pie}
+\usepackage{csquotes}
 \usepackage[utf8]{inputenc}
 \usepackage[sorting=none]{biblatex}
 \addbibresource{bibliography.bib}
@@ -96,12 +101,140 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{My Solution}
+    \vfill
+    \centering
+    \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+        \usebeamerfont{title}Results\par%
+    \end{beamercolorbox}
+    \vfill
 \end{frame}
 
 \begin{frame}
-    \frametitle{Results}
+    \frametitle{Complex Algorithms}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={JavaScript, Web Assembly},
+                    xtick=data,
+                    bar width = 20,
+                    enlarge x limits = 0.5,
+                    ybar,
+                    ylabel = Time(Seconds),
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=200,
+                    legend style={at={(0.5,-0.15)},
+                            anchor=north,legend columns=-1}		]
+                \addplot coordinates {
+                        (JavaScript,   2.48)
+                        (Web Assembly,  1.60)
+                    };
+                \addplot coordinates {
+                        (JavaScript,   12)
+                        (Web Assembly,  1.14)
+                    };
+                \legend{JPEG Encoding,Gaussian Blur}
+            \end{axis}
+        \end{tikzpicture}
+    \end{figure}
 \end{frame}
+
+\begin{frame}
+    \frametitle{Simple Algorithms}
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={JavaScript, Web Assembly},
+                    xtick=data,
+                    bar width = 20,
+                    enlarge x limits = 0.5,
+                    ybar,
+                    ylabel = Time(Milliseconds),
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=200,
+                    legend style={at={(0.5,-0.15)},
+                            anchor=north,legend columns=-1}		]
+                \addplot coordinates {
+                        (JavaScript,   102)
+                        (Web Assembly,  77)
+                    };
+                \addplot coordinates {
+                        (JavaScript,   103)
+                        (Web Assembly,  278)
+                    };
+                \legend{Brightness, Contrast}
+            \end{axis}
+        \end{tikzpicture}
+    \end{figure}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Time for the full process}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={JavaScript, Web Assembly, imagemagick},
+                    xtick=data,
+                    bar width = 20,
+                    enlarge x limits = 0.2,
+                    ybar,
+                    ylabel = Time(Seconds),
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=300,
+                    height=200		]
+                \addplot coordinates {
+                        (JavaScript,  3.17)
+                        (Web Assembly,  2.79)
+                        (imagemagick,  0.37)
+                    };
+            \end{axis}
+        \end{tikzpicture}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Memory consumption of the full process}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={JavaScript, Web Assembly, imagemagick},
+                    xtick=data,
+                    bar width = 20,
+                    enlarge x limits = 0.2,
+                    ybar,
+                    ylabel = Memory (Megabytes),
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=300,
+                    height=200		]
+                \addplot coordinates {
+                        (JavaScript,  61.4)
+                        (Web Assembly,  28.8)
+                        (imagemagick,  10.6)
+                    };
+            \end{axis}
+        \end{tikzpicture}
+    \end{figure}
+\end{frame}
+
+
+
 
 \begin{frame}
     \frametitle{Evaluation}
