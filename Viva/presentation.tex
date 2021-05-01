@@ -17,18 +17,78 @@
 
 \begin{frame}
     \frametitle{What is the project about?}
+    Web Assembly is a relatively new method for computation on the web, allowing for the use of a much wider range of languages. This is being used in high intensity contexts to improve computation time.
 \end{frame}
 
 \begin{frame}
     \frametitle{Research Question}
+    The Research question is to find in which cases Web Assembly offers a benefit over JavaScript, finding this out by implementing image processing algorithms using both mechanisms.
 \end{frame}
 
 \begin{frame}
     \frametitle{Deliverables}
+    The basic aim is compare the performance of one complex algorithm between Web Assembly and JPEG, for a complex algorithm, it should not simply loop over the pixels of the image, and instead be performing more sophisticated techniques. The intermediate aim is to extend this to multiple complex algorithms. The advanced aim is to look into tweaks that can be used to improve performance, such as compile time optimizations for Web Assembly.
 \end{frame}
 
 \begin{frame}
-    \frametitle{What has been done by others?}
+    \vfill
+    \centering
+    \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+        \usebeamerfont{title}What has been done by others?\par%
+    \end{beamercolorbox}
+    \vfill
+\end{frame}
+
+\begin{frame}
+    \frametitle{Using Web Assembly for image processing — Next.js}
+    \begin{center}
+        \includegraphics[width=5cm]{nextjs.png}
+
+    \end{center}
+
+    $$
+        96.5 \text{ MB} \Rightarrow 69.2 \text{ MB}
+    $$
+\end{frame}
+
+\begin{frame}
+    \frametitle{Performance of Web Assembly — Figma}
+    \begin{center}
+        \includegraphics[width=10cm]{figma_perf.png}
+
+    \end{center}
+
+    \begin{center}
+        3$\times$ faster load times
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Performance of Web Assembly — Fastq.bio}
+    \begin{center}
+        \includegraphics[width=10cm]{fastq.png}
+
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Performance of Web Assembly — Compared to native}
+
+    {\small
+        \begin{table}[H]
+            \centering
+            \vspace*{6pt}
+            \label{native}
+            \begin{tabular}{cccc}\hline\hline
+                Benchmark & Field                   & Native time(s) & Google Chrome time(s) \\ \hline
+                bzip2     & Compression             & 370            & 864                   \\
+                mcf       & Combinatorial           & 221            & 180                   \\
+                milc      & Chromodynamics          & 375            & 369                   \\
+                namd      & Molecular Dynamics      & 271            & 369                   \\
+                gobmk     & Artificial Intelligence & 352            & 537
+            \end{tabular}
+        \end{table}
+    }
 \end{frame}
 
 \begin{frame}
