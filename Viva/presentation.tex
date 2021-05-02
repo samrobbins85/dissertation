@@ -4,9 +4,9 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{pgf-pie}
-\usepackage{csquotes}
 \usepackage{bbding}
 \usepackage[utf8]{inputenc}
+\usepackage{csquotes}
 \usepackage[sorting=none]{biblatex}
 \addbibresource{bibliography.bib}
 \setbeamertemplate{bibliography item}{\insertbiblabel}
@@ -40,7 +40,7 @@
     \vfill
     \centering
     \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
-        \usebeamerfont{title}What has been done by others?\par%
+        \usebeamerfont{title} What has been done by others?\par%
     \end{beamercolorbox}
     \vfill
 \end{frame}
@@ -105,7 +105,7 @@
     \vfill
     \centering
     \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
-        \usebeamerfont{title}My Solution\par%
+        \usebeamerfont{title} My Solution\par%
     \end{beamercolorbox}
     \vfill
 \end{frame}
@@ -138,10 +138,24 @@
 \end{frame}
 
 \begin{frame}
+    \frametitle{JPEG — YCbCr Conversion}
+    \begin{center}
+        \includegraphics[width=0.48\textwidth]{ycbcr.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{JPEG — Downsampling}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{downsampling.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}
     \vfill
     \centering
     \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
-        \usebeamerfont{title}Results\par%
+        \usebeamerfont{title} Results\par%
     \end{beamercolorbox}
     \vfill
 \end{frame}
@@ -279,8 +293,8 @@
         \item[\Checkmark] Faster
         \item[\Checkmark] Lower memory consumption
         \item[\Checkmark] Static types
-        \item[\XSolidBrush] Slower than native
         \item[\XSolidBrush] Static types
+        \item[\XSolidBrush] Slower than native
         \item[\XSolidBrush] Need to use multiple languages
         \item[\XSolidBrush] Libraries have had less development
     \end{itemize}
