@@ -39,12 +39,22 @@
 
 \begin{frame}
     \frametitle{Research Question}
-    The Research question is to find in which cases Web Assembly offers a benefit over JavaScript, finding this out by implementing image processing algorithms using both mechanisms.
+    Finding in which cases Web Assembly offers a benefit over JavaScript, by implementing image processing algorithms using both mechanisms.
 \end{frame}
 
 \begin{frame}
     \frametitle{Deliverables}
-    The basic aim is compare the performance of one complex algorithm between Web Assembly and JPEG, for a complex algorithm, it should not simply loop over the pixels of the image, and instead be performing more sophisticated techniques. The intermediate aim is to extend this to multiple complex algorithms. The advanced aim is to look into tweaks that can be used to improve performance, such as compile time optimizations for Web Assembly.
+    \begin{itemize}
+        \item \textbf{Basic aim}
+
+              Compare the performance of one complex algorithm between Web Assembly and JPEG, for a complex algorithm, it should not simply loop over the pixels of the image, and instead be performing more sophisticated techniques.
+        \item \textbf{Intermediate aim}
+
+              Extend the basic aim to multiple complex algorithms.
+        \item \textbf{Advanced aim}
+
+              Look into tweaks that can be used to improve performance, such as compile time optimizations for Web Assembly.
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -110,6 +120,10 @@
 
 \begin{frame}
     \frametitle{How does it compare?}
+    \begin{itemize}
+        \item Studies haven't been done on the performance of web assembly for image processing, just some metrics found during development of one project
+        \item Often comparisons are being made between asm.js and Web Assembly, comparing native implementations gives a more fair comparison
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -119,6 +133,33 @@
         \usebeamerfont{title} My Solution\par%
     \end{beamercolorbox}
     \vfill
+\end{frame}
+
+\begin{frame}
+    \frametitle{Choosing a language for Web Assembly}
+    \begin{itemize}
+        \item Most languages have some support for Web Assembly
+        \item Web Assembly doesn't include a garbage collector so languages that don't need them are preferred
+        \item Lots of development work has been put into the Rust ecosystem regarding web assembly
+    \end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Choosing problems}
+    \begin{itemize}
+        \item Common image processing tasks
+        \item Range of computational complexity
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Platform}
+    \begin{itemize}
+        \item Want results to be equivalent to Google Chrome (64\% market share)
+        \item Node.js uses the V8 browser engine (the same as Google Chrome)
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -198,12 +239,153 @@
 \end{frame}
 
 \begin{frame}
+    \frametitle{Web Assembly Optimizations}
+    \begin{enumerate}
+        \item Link Time Optimization
+
+
+        \item Rust compiler opt-level
+
+              \begin{itemize}
+                  \item "s" : optimize for size
+                  \item "z" : optimize aggressively for size
+              \end{itemize}
+
+
+        \item \texttt{wasm-opt}
+
+
+
+              \begin{itemize}
+                  \item \texttt{-Os} : optimize for size
+                  \item \texttt{-Oz} : optimize aggressively for size
+                  \item \texttt{-O} : optimize for speed
+                  \item \texttt{-O3} : optimize aggressively for speed
+              \end{itemize}
+
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Web Assembly Optimizations - Time}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={No changes, LTO, Opt-s, Opt-z, -Os, -Oz, -O, -O3},
+                    xtick=data,
+                    x tick label style={rotate=45, anchor=north east, inner sep=0mm},
+                    bar width = 20,
+                    enlarge x limits = 0.1,
+                    ybar,
+                    ylabel = Time(Milliseconds),
+                    y label style={at={(axis description cs:-0.01,.5)},anchor=south},
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=300,
+                    height=200		]
+                \addplot coordinates {
+                        (No changes,  1031)
+                        (LTO, 846)
+                        (Opt-s, 2275)
+                        (Opt-z, 3846)
+                        (-Os, 1078)
+                        (-Oz, 1087)
+                        (-O, 1154)
+                        (-O3, 1028)
+                    };
+            \end{axis}
+        \end{tikzpicture}
+    \end{figure}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Web Assembly Optimizations - Size}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    symbolic x coords={No changes, LTO, Opt-s, Opt-z, -Os, -Oz, -O, -O3},
+                    xtick=data,
+                    x tick label style={rotate=45, anchor=north east, inner sep=0mm},
+                    bar width = 20,
+                    enlarge x limits = 0.1,
+                    ybar,
+                    ylabel = Size(Kilobytes),
+                    y label style={at={(axis description cs:-0.01,.5)},anchor=south},
+                    ymin=0,
+                    nodes near coords,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    width=300,
+                    height=200		]
+                \addplot coordinates {
+                        (No changes,  1100)
+                        (LTO, 920.7)
+                        (Opt-s, 954.2)
+                        (Opt-z, 979.5)
+                        (-Os, 981.5)
+                        (-Oz, 981.4)
+                        (-O, 981.5)
+                        (-O3, 984.2)
+                    };
+            \end{axis}
+        \end{tikzpicture}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Verifying the results}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel={Resolution (Megapixels)},
+                    ylabel={Time (Milliseconds)},
+                    xmin=0,
+                    ymin=0,
+                    axis x line*=bottom,
+                    axis y line*=left,
+                    legend style={at={(0.5,-0.2)},
+                            anchor=north,legend columns=-1}
+                ]
+
+                \addplot[
+                    color = blue,
+                    mark=*,
+                ]
+                coordinates {
+                        (10, 158)(20,287)(30,438)(40,572)(50,708)(60,856)(70,1077)(80,1157)
+                    };
+                \addplot[mark=*, color=red] coordinates {
+                        (10, 106)(20,213)(30,323)(40,428)(50,574)(60,646)(70,757)(80,870)
+                    };
+                \legend{JavaScript, Web Assembly}
+
+            \end{axis}
+        \end{tikzpicture}
+
+    \end{figure}
+\end{frame}
+
+\begin{frame}
     \vfill
     \centering
     \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
         \usebeamerfont{title} Results\par%
     \end{beamercolorbox}
     \vfill
+\end{frame}
+
+\begin{frame}
+    \frametitle{Interesting metrics}
+    \begin{itemize}
+        \item Run time
+        \item Memory consumption
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
